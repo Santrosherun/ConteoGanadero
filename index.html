@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Gestor de Ganado</title>
+        <!-- <link rel="stylesheet" href="style.css" />
+        <link rel="manifest" href="manifest.json" /> -->
+    </head>
+    <body>
+        <h1>Gestor de Ganado</h1>
+
+        <form id="form-animal">
+            <input type="text" id="nombre" placeholder="Nombre" required />
+            <input type="text" id="raza" placeholder="Raza" required />
+            <input type="number" id="edad" placeholder="Edad" required />
+            <input type="number" id="peso" placeholder="Peso (kg)" required />
+            <button type="submit">Agregar</button>
+        </form>
+
+        <h2>Animales registrados</h2>
+        <ul id="lista-animales"></ul>
+        <script type="module">
+            import Dexie from 'https://unpkg.com/dexie@3.2.4/dist/dexie.mjs';
+            window.Dexie = Dexie;
+        </script>
+
+        <script type="module" src="./db.js"></script>
+        <script type="module" src="./app.js"></script>
+    </body>
+</html>
