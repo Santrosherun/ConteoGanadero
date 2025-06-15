@@ -1,2 +1,2 @@
 # ConteoGanadero
-This will be a PWA
+This will be a README
