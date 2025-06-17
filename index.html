@@ -9,13 +9,36 @@
     </head>
     <body>
         <h1>Gestor de Ganado</h1>
-
+<!--        Campos viejos 
         <form id="form-animal">
             <input type="text" id="nombre" placeholder="Nombre" required />
             <input type="text" id="raza" placeholder="Raza" required />
             <input type="number" id="edad" placeholder="Edad" required />
             <input type="number" id="peso" placeholder="Peso (kg)" required />
             <button type="submit">Agregar</button>
+        </form>
+-->
+        <!-- Campos nuevos -->
+        <form id="form-animal">
+            <input type="text" id="codigo" placeholder="Código identificador" required />
+
+            <select id="tipo" required>
+                <option value="">-- Tipo --</option>
+                <option value="toro">Toro</option>
+                <option value="hembra">Hembra</option>
+            </select>
+
+            <label for="fechaNacimiento">Fecha de nacimiento:</label>
+            <input type="date" id="fechaNacimiento" required />
+
+            <!-- solo terneros -->
+            <input type="number" id="tiempoAmamantado" placeholder="Meses amamantado" min="0" />
+
+            <!-- solo hembras adultas -->
+            <input type="number" id="numeroPartos" placeholder="Nº de partos" min="0" />
+            <input type="text" id="intervalosParto" placeholder="Intervalos entre partos (meses, separados por coma)" />
+
+            <button type="submit">Guardar</button>
         </form>
 
         <h2>Animales registrados</h2>
