@@ -5,17 +5,11 @@ import {
     actualizarAnimal
 } from './db.js';
 
+import { calcularEdadMeses, inicializarFormDinamico } from './utils.js';
+
 const form = document.getElementById('form-animal');
 const lista = document.getElementById('lista-animales');
 let editandoId = null;
-
-// Calcula edad en meses a partir de fecha ISO
-const calcularEdadEnMeses = fechaISO => {
-    const n = new Date(fechaISO), h = new Date();
-    const años  = h.getFullYear() - n.getFullYear();
-    const meses = h.getMonth() - n.getMonth();
-    return años * 12 + meses;
-};
 
 const renderAnimales = async () => {
     const animales = await obtenerAnimales();
@@ -24,11 +18,12 @@ const renderAnimales = async () => {
     animales.forEach(animal => {
         const li = document.createElement('li');
         li.innerHTML = `
-        <strong>${animal.codigo}</strong> (ID interno: ${animal.id}) — ${animal.tipo} — ${animal.edadEnMeses} meses
+        <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses
         ${animal.esTernero
             ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
-            : `(Partos: ${animal.numeroDePartos}, intervalos: ${animal.intervaloParto || []})`
+            : `(Partos: ${animal.numeroDePartos}, Eventos: ${animal.intervaloParto.join(', ') || []})`
         }
+
         <button data-id="${animal.id}" class="editar">Editar</button>
         <button data-id="${animal.id}" class="eliminar">Eliminar</button>
         `;
@@ -55,14 +50,25 @@ const renderAnimales = async () => {
         document.getElementById('codigo').value = animal.codigo;
         document.getElementById('tipo').value = animal.tipo;
         document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
+        inicializarFormDinamico();  
+
         if (animal.esTernero) {
             document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
         } else if (animal.tipo === 'hembra') {
-            document.getElementById('numeroPartos').value     = animal.numeroDePartos;
-            document.getElementById('intervalosParto').value  = (animal.intervaloParto || []).join(', ');
+            document.getElementById('numeroPartos').value = animal.numeroDePartos;
+            const contenedor = document.getElementById('contenedor-intervalos');
+            contenedor.innerHTML = ''; // limpiar todos los campos anteriores
+
+            (animal.intervaloParto || []).forEach(texto => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'intervalo';
+                input.value = texto;
+                contenedor.appendChild(input);
+            });
         }
         editandoId = id;
-        
+
       })
     );
 };
@@ -74,7 +80,7 @@ form.addEventListener('submit', async (e) => {
     const codigo = document.getElementById('codigo').value.trim() || 'SIN-CODIGO';
     const tipo = document.getElementById('tipo').value;
     const fechaNacimiento = document.getElementById('fechaNacimiento').value;
-    const edadEnMeses = calcularEdadEnMeses(fechaNacimiento);
+    const edadEnMeses = calcularEdadMeses(fechaNacimiento);
     const esTernero = edadEnMeses < 12;
 
     const tiempoAmamantado = esTernero
@@ -86,11 +92,9 @@ form.addEventListener('submit', async (e) => {
         : null;
 
     const intervaloParto = (!esTernero && tipo === 'hembra')
-        // ESTO NO LO ENTIENDO DEL TODO
-        ? document.getElementById('intervalosParto').value
-            .split(',')
-            .map(s => parseInt(s.trim()))
-            .filter(n => !isNaN(n))
+        ? Array.from(document.querySelectorAll('.intervalo')) // múltiples campos con esa clase
+            .map(input => input.value.trim())
+            .filter(s => s !== '')
         : null;
 
     const nuevoAnimal = {
@@ -116,4 +120,18 @@ form.addEventListener('submit', async (e) => {
     renderAnimales();
 });
 
-document.addEventListener('DOMContentLoaded', renderAnimales);
+// Inicializar todo tras cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarFormDinamico();
+    renderAnimales();
+
+    document.getElementById('agregar-intervalo').addEventListener('click', () => {
+        const contenedor = document.getElementById('contenedor-intervalos');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'intervalo';
+        input.placeholder = 'Ej: Segundo Parto: 2024-01-01';
+        contenedor.appendChild(input);
+    });
+
+});
