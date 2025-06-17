@@ -5,17 +5,11 @@ import {
     actualizarAnimal
 } from './db.js';
 
+import { calcularEdadMeses, inicializarFormDinamico } from './utils.js';
+
 const form = document.getElementById('form-animal');
 const lista = document.getElementById('lista-animales');
 let editandoId = null;
-
-// Calcula edad en meses a partir de fecha ISO
-const calcularEdadEnMeses = fechaISO => {
-    const n = new Date(fechaISO), h = new Date();
-    const años  = h.getFullYear() - n.getFullYear();
-    const meses = h.getMonth() - n.getMonth();
-    return años * 12 + meses;
-};
 
 const renderAnimales = async () => {
     const animales = await obtenerAnimales();
@@ -74,7 +68,7 @@ form.addEventListener('submit', async (e) => {
     const codigo = document.getElementById('codigo').value.trim() || 'SIN-CODIGO';
     const tipo = document.getElementById('tipo').value;
     const fechaNacimiento = document.getElementById('fechaNacimiento').value;
-    const edadEnMeses = calcularEdadEnMeses(fechaNacimiento);
+    const edadEnMeses = calcularEdadMeses(fechaNacimiento);
     const esTernero = edadEnMeses < 12;
 
     const tiempoAmamantado = esTernero
@@ -116,4 +110,8 @@ form.addEventListener('submit', async (e) => {
     renderAnimales();
 });
 
-document.addEventListener('DOMContentLoaded', renderAnimales);
+// Inicializar todo tras cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarFormDinamico();
+  renderAnimales();
+});
