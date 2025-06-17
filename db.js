@@ -3,7 +3,7 @@ const Dexie = window.Dexie;
 export const db = new Dexie('ganadoDB');
 
 db.version(1).stores({
-  animales: '++id, nombre, raza, edad, peso'
+  animales: '++id, codigo, tipo, fechaNacimiento, edadEnMeses, esTernero, tiempoAmamantado, numeroDePartos'
 });
 
 // Funciones básicas
