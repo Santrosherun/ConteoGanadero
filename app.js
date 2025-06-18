@@ -68,6 +68,7 @@ const renderAnimales = async () => {
             });
         }
         editandoId = id;
+        document.getElementById('btn-guardar').textContent = 'Actualizar';
 
       })
     );
@@ -116,7 +117,10 @@ form.addEventListener('submit', async (e) => {
         await agregarAnimal(nuevoAnimal);
     }
 
+    document.getElementById('btn-guardar').textContent = 'Guardar';
     form.reset();
+    document.getElementById('contenedor-intervalos').innerHTML = '';
+    inicializarFormDinamico();
     renderAnimales();
 });
 
