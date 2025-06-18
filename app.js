@@ -21,8 +21,8 @@ const renderAnimales = async () => {
         li.innerHTML = `
         <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses
         ${animal.esTernero
-            ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
-            : `(Partos: ${animal.numeroDePartos}, Eventos: ${animal.intervaloParto.join(', ') || []})`
+            ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
+            : `(Partos: ${animal.numeroDePartos}, intervalos: ${animal.intervaloParto || []})`
         }
 
         <button data-id="${animal.id}" class="editar">Editar</button>
