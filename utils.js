@@ -32,7 +32,7 @@ export function inicializarFormDinamico() {
         }
         if (tipo !== 'hembra' || edadMeses < 12) {
             document.getElementById('numeroPartos').value    = '';
-            document.getElementById('intervalosParto').value = '';
+            document.getElementById('contenedor-intervalos').innerHTML = '';
         }
     }
 

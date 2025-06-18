@@ -39,11 +39,14 @@
             <!-- solo hembras adultas -->
             <div id="campos-partos" style="display:none;">
                 <input type="number" id="numeroPartos" placeholder="Nº de partos" min="0" />
-                <input type="text"   id="intervalosParto" placeholder="Intervalos entre partos (meses, separados por coma)" />
+                <div id="contenedor-intervalos">
+                    <input type="text" class="intervalo" placeholder="Ej: Primer Parto: 2023-08-12" />
+                </div>
             </div>
 
-            <button type="submit">Guardar</button>
+            <button type="submit" id="btn-guardar">Guardar</button>
         </form>
+        <button type="button" id="agregar-intervalo">Agregar otro evento</button>
 
         <h2>Animales registrados</h2>
         <ul id="lista-animales"></ul>
