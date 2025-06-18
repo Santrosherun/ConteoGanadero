@@ -12,6 +12,7 @@ const lista = document.getElementById('lista-animales');
 let editandoId = null;
 
 const renderAnimales = async () => {
+    
     const animales = await obtenerAnimales();
     lista.innerHTML = '';
 
@@ -32,46 +33,58 @@ const renderAnimales = async () => {
 
     // Asignar eventos a los botones
     //ELIMINAR
-    lista.querySelectorAll('.eliminar').forEach(btn =>
-    btn.addEventListener('click', async (e) => {
-        const id = parseInt(e.target.dataset.id);
-        await eliminarAnimal(id);
-        renderAnimales();
-        })
-    );
+
+    try {
+        lista.querySelectorAll('.eliminar').forEach(btn =>
+        btn.addEventListener('click', async (e) => {
+            const id = parseInt(e.target.dataset.id);
+            await eliminarAnimal(id);
+            renderAnimales();
+            })
+        );
+    } catch (err) {
+        alert('Ocurrió un error eliminando el animal.')
+    }
+
     //EDITAR
-    document.querySelectorAll('.editar').forEach(btn =>
-    btn.addEventListener('click', async (e) => {
-        const id = parseInt(e.target.dataset.id);
-        const animales = await obtenerAnimales();
-        const animal = animales.find(a => a.id === id);
-        if (!animal) return;
-        // Llenar el form
-        document.getElementById('codigo').value = animal.codigo;
-        document.getElementById('tipo').value = animal.tipo;
-        document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
-        inicializarFormDinamico();  
 
-        if (animal.esTernero) {
-            document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
-        } else if (animal.tipo === 'hembra') {
-            document.getElementById('numeroPartos').value = animal.numeroDePartos;
-            const contenedor = document.getElementById('contenedor-intervalos');
-            contenedor.innerHTML = ''; // limpiar todos los campos anteriores
+    try {
+        document.querySelectorAll('.editar').forEach(btn =>
+        btn.addEventListener('click', async (e) => {
+            const id = parseInt(e.target.dataset.id);
+            const animales = await obtenerAnimales();
+            const animal = animales.find(a => a.id === id);
+            if (!animal) return;
+            // Llenar el form
+            document.getElementById('codigo').value = animal.codigo;
+            document.getElementById('tipo').value = animal.tipo;
+            document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
+            inicializarFormDinamico();  
+    
+            if (animal.esTernero) {
+                document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
+            } else if (animal.tipo === 'hembra') {
+                document.getElementById('numeroPartos').value = animal.numeroDePartos;
+                const contenedor = document.getElementById('contenedor-intervalos');
+                contenedor.innerHTML = ''; // limpiar todos los campos anteriores
+    
+                (animal.intervaloParto || []).forEach(texto => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'intervalo';
+                    input.value = texto;
+                    contenedor.appendChild(input);
+                });
+            }
+            editandoId = id;
+            document.getElementById('btn-guardar').textContent = 'Actualizar';
+    
+          })
+        );
+    } catch (err) {
+        alert('Ocurrió un error obteniendo el animal.')
+    }
 
-            (animal.intervaloParto || []).forEach(texto => {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'intervalo';
-                input.value = texto;
-                contenedor.appendChild(input);
-            });
-        }
-        editandoId = id;
-        document.getElementById('btn-guardar').textContent = 'Actualizar';
-
-      })
-    );
 };
 
 form.addEventListener('submit', async (e) => {
@@ -110,12 +123,18 @@ form.addEventListener('submit', async (e) => {
     };
     
     // ACTUALIZAR
-    if (editandoId !== null) {
-        await actualizarAnimal(editandoId, nuevoAnimal);
-        editandoId = null;
-    } else {
-        await agregarAnimal(nuevoAnimal);
+
+    try {
+        if (editandoId !== null) {
+            await actualizarAnimal(editandoId, nuevoAnimal);
+            editandoId = null;
+        } else {
+            await agregarAnimal(nuevoAnimal);
+        }
+    } catch (err) {
+        alert('Ocurrió un error guardando el animal.');
     }
+
 
     document.getElementById('btn-guardar').textContent = 'Guardar';
     form.reset();
