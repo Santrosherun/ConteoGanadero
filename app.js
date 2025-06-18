@@ -20,7 +20,7 @@ const renderAnimales = async () => {
         li.innerHTML = `
         <strong>${animal.codigo}</strong> (ID interno: ${animal.id}) — ${animal.tipo} — ${animal.edadEnMeses} meses
         ${animal.esTernero
-            ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
+            ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
             : `(Partos: ${animal.numeroDePartos}, intervalos: ${animal.intervaloParto || []})`
         }
         <button data-id="${animal.id}" class="editar">Editar</button>
