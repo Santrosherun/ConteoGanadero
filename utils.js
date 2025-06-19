@@ -14,6 +14,7 @@ export function inicializarFormDinamico() {
     const camposPartos = document.getElementById('campos-partos');
     const numeroPartosInput = document.getElementById('numeroPartos');
     const contenedorIntervalos = document.getElementById('contenedor-intervalos');
+    const tiempoAmamantadoInput = document.getElementById('tiempoAmamantado');
 
     function actualizarCamposVisibles() {
         const tipo = tipoInput.value;
@@ -27,6 +28,9 @@ export function inicializarFormDinamico() {
 
         campoAmamantado.style.display = edadMeses < 12 ? 'inline-block' : 'none';
         camposPartos.style.display = (tipo === 'hembra' && edadMeses >= 12) ? 'inline-block' : 'none';
+
+        tiempoAmamantadoInput.required = edadMeses < 12;
+        numeroPartosInput.required = (tipo === 'hembra' && edadMeses >= 12);
 
         // Limpia valores ocultos
         if (edadMeses >= 12) {
@@ -50,7 +54,8 @@ export function inicializarFormDinamico() {
                 const input = document.createElement('input');
                 input.type = 'date';
                 input.className = 'intervalo';
-
+                input.required = true;
+                
                 contenedorIntervalos.appendChild(label);
                 contenedorIntervalos.appendChild(input);
                 contenedorIntervalos.appendChild(document.createElement('br'));

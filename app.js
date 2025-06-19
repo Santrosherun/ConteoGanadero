@@ -13,18 +13,21 @@ let editandoId = null;
 
 const renderAnimales = async () => {
     
-    const animales = await obtenerAnimales();
+    const animales = await obtenerAnimales(); 
     lista.innerHTML = '';
 
     animales.forEach(animal => {
         const li = document.createElement('li');
         li.innerHTML = `
-        <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses
-        ${animal.esTernero
-            ? `(Amamantado: ${animal.tiempoAmamantado} meses)`
-            : `(Partos: ${animal.numeroDePartos}, intervalos: ${animal.intervaloParto || []})`
+        <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses</strong><br/>
+        ${
+            animal.esTernero
+                ? `Amamantado: ${animal.tiempoAmamantado} meses`
+                : (animal.tipo === 'hembra'
+                    ? `Partos: ${animal.numeroDePartos}, Eventos: ${(animal.intervaloParto || []).join(', ')}`
+                    : `Adulto sin datos reproductivos (por ahora)`
+                )
         }
-
         <button data-id="${animal.id}" class="editar">Editar</button>
         <button data-id="${animal.id}" class="eliminar">Eliminar</button>
         `;
@@ -47,27 +50,30 @@ const renderAnimales = async () => {
     }
 
     //EDITAR
-
     try {
-        document.querySelectorAll('.editar').forEach(btn =>
+    document.querySelectorAll('.editar').forEach(btn =>
         btn.addEventListener('click', async (e) => {
             const id = parseInt(e.target.dataset.id);
             const animales = await obtenerAnimales();
             const animal = animales.find(a => a.id === id);
             if (!animal) return;
-            // Llenar el form
+
+            // Llenar el formulario
             document.getElementById('codigo').value = animal.codigo;
             document.getElementById('tipo').value = animal.tipo;
             document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
-            inicializarFormDinamico();  
-    
+
+            // Forzar actualización visual de campos condicionales
+            document.getElementById('tipo').dispatchEvent(new Event('change'));
+            document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+
             if (animal.esTernero) {
                 document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
             } else if (animal.tipo === 'hembra') {
-                document.getElementById('numeroPartos').value = animal.numeroDePartos;
+                document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
+
                 const contenedor = document.getElementById('contenedor-intervalos');
                 contenedor.innerHTML = '';
-                document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
 
                 for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
                     const label = document.createElement('label');
@@ -77,6 +83,7 @@ const renderAnimales = async () => {
                     input.type = 'date';
                     input.className = 'intervalo';
                     input.value = animal.intervaloParto?.[i] || '';
+                    input.required = true;
 
                     contenedor.appendChild(label);
                     contenedor.appendChild(input);
@@ -117,7 +124,62 @@ form.addEventListener('submit', async (e) => {
             .map(input => input.value)
             .filter(val => val !== '')
         : null;
+    // VALIDACIONES POSIBLES (MUY INTRUSIVAS)
 
+    // if (!codigo || !tipo || !fechaNacimiento) {
+    // alert('Por favor completa todos los campos obligatorios.');
+    // return;
+    // }
+
+    // if (esTernero) {
+    //     if (document.getElementById('tiempoAmamantado').value === '') {
+    //         alert('Ingresa el tiempo amamantado del ternero.');
+    //         return;
+    //     }
+    // }
+
+    // if (!esTernero && tipo === 'hembra') {
+    //     if (document.getElementById('numeroPartos').value === '') {
+    //         alert('Ingresa el número de partos.');
+    //         return;
+    //     }
+    //     const campos = Array.from(document.querySelectorAll('.intervalo'));
+    //     const algunaVacia = campos.some(input => input.value.trim() === '');
+    //     if (algunaVacia) {
+    //         alert('Por favor completa todas las fechas de parto.');
+    //         return;
+    //     }
+    // }
+
+    // Validar fechas cronológicas
+
+    
+    if (!esTernero && tipo === 'hembra') {
+        if (numeroDePartos > edadEnMeses) {
+            alert(`Una hembra de ${edadEnMeses} meses no puede haber tenido ${numeroDePartos} partos.`);
+            return;
+        }
+
+        const fechaNac = new Date(fechaNacimiento);
+        for (let i = 0; i < intervaloParto.length; i++) {
+            const fechaParto = new Date(intervaloParto[i]);
+            if (fechaParto < fechaNac) {
+                alert(`El parto ${i + 1} no puede ser anterior a la fecha de nacimiento.`);
+                return;
+            }
+        }
+
+        if (Array.isArray(intervaloParto) && intervaloParto.length > 1) {
+        for (let i = 1; i < intervaloParto.length; i++) {
+            const anterior = new Date(intervaloParto[i - 1]);
+            const actual = new Date(intervaloParto[i]);
+            if (actual < anterior) {
+                alert('Las fechas de parto deben estar en orden cronológico.');
+                return;
+            }
+            }
+        }
+    }
     const nuevoAnimal = {
         codigo,
         tipo,
@@ -145,6 +207,8 @@ form.addEventListener('submit', async (e) => {
 
     document.getElementById('btn-guardar').textContent = 'Guardar';
     form.reset();
+    document.getElementById('tipo').dispatchEvent(new Event('change'));
+    document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
     inicializarFormDinamico();
     renderAnimales();
 });
