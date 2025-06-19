@@ -12,6 +12,8 @@ export function inicializarFormDinamico() {
     const fechaNacimientoInput = document.getElementById('fechaNacimiento');
     const campoAmamantado = document.getElementById('campo-amamantado');
     const camposPartos = document.getElementById('campos-partos');
+    const numeroPartosInput = document.getElementById('numeroPartos');
+    const contenedorIntervalos = document.getElementById('contenedor-intervalos');
 
     function actualizarCamposVisibles() {
         const tipo = tipoInput.value;
@@ -31,11 +33,32 @@ export function inicializarFormDinamico() {
             document.getElementById('tiempoAmamantado').value = '';
         }
         if (tipo !== 'hembra' || edadMeses < 12) {
-            document.getElementById('numeroPartos').value    = '';
-            document.getElementById('contenedor-intervalos').innerHTML = '';
+            numeroPartosInput.value = '';
+            contenedorIntervalos.innerHTML = '';
+        }
+    }
+
+    function actualizarCamposIntervalo() {
+        const numero = parseInt(numeroPartosInput.value);
+        contenedorIntervalos.innerHTML = '';
+
+        if (!isNaN(numero) && numero > 0) {
+            for (let i = 1; i <= numero; i++) {
+                const label = document.createElement('label');
+                label.textContent = `Parto ${i}:`;
+
+                const input = document.createElement('input');
+                input.type = 'date';
+                input.className = 'intervalo';
+
+                contenedorIntervalos.appendChild(label);
+                contenedorIntervalos.appendChild(input);
+                contenedorIntervalos.appendChild(document.createElement('br'));
+            }
         }
     }
 
     tipoInput.addEventListener('change', actualizarCamposVisibles);
     fechaNacimientoInput.addEventListener('change', actualizarCamposVisibles);
+    numeroPartosInput.addEventListener('input', actualizarCamposIntervalo);
 }

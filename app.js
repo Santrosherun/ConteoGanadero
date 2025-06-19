@@ -66,15 +66,22 @@ const renderAnimales = async () => {
             } else if (animal.tipo === 'hembra') {
                 document.getElementById('numeroPartos').value = animal.numeroDePartos;
                 const contenedor = document.getElementById('contenedor-intervalos');
-                contenedor.innerHTML = ''; // limpiar todos los campos anteriores
-    
-                (animal.intervaloParto || []).forEach(texto => {
+                contenedor.innerHTML = '';
+                document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
+
+                for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
+                    const label = document.createElement('label');
+                    label.textContent = `Parto ${i + 1}:`;
+
                     const input = document.createElement('input');
-                    input.type = 'text';
+                    input.type = 'date';
                     input.className = 'intervalo';
-                    input.value = texto;
+                    input.value = animal.intervaloParto?.[i] || '';
+
+                    contenedor.appendChild(label);
                     contenedor.appendChild(input);
-                });
+                    contenedor.appendChild(document.createElement('br'));
+                }
             }
             editandoId = id;
             document.getElementById('btn-guardar').textContent = 'Actualizar';
@@ -107,8 +114,8 @@ form.addEventListener('submit', async (e) => {
 
     const intervaloParto = (!esTernero && tipo === 'hembra')
         ? Array.from(document.querySelectorAll('.intervalo')) // múltiples campos con esa clase
-            .map(input => input.value.trim())
-            .filter(s => s !== '')
+            .map(input => input.value)
+            .filter(val => val !== '')
         : null;
 
     const nuevoAnimal = {
@@ -138,7 +145,6 @@ form.addEventListener('submit', async (e) => {
 
     document.getElementById('btn-guardar').textContent = 'Guardar';
     form.reset();
-    document.getElementById('contenedor-intervalos').innerHTML = '';
     inicializarFormDinamico();
     renderAnimales();
 });
@@ -147,14 +153,5 @@ form.addEventListener('submit', async (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     inicializarFormDinamico();
     renderAnimales();
-
-    document.getElementById('agregar-intervalo').addEventListener('click', () => {
-        const contenedor = document.getElementById('contenedor-intervalos');
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'intervalo';
-        input.placeholder = 'Ej: Segundo Parto: 2024-01-01';
-        contenedor.appendChild(input);
-    });
 
 });
