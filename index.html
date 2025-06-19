@@ -8,6 +8,17 @@
         <link rel="manifest" href="manifest.json" /> -->
     </head>
     <body>
+        <!-- QUITAR ESTO DE AQUI Y PONERLO EN UN .CSS -->
+        <style>
+        .editando {
+            background-color: #f0f8ff;
+            border: 2px solid #2196f3;
+            border-radius: 5px;
+            padding: 6px;
+            margin-bottom: 4px;
+        }
+        </style>
+
         <h1>Gestor de Ganado</h1>
 <!--        Campos viejos 
         <form id="form-animal">
@@ -45,6 +56,7 @@
             </div>
 
             <button type="submit" id="btn-guardar">Guardar</button>
+            <button type="button" id="btn-cancelar" style="display:none;">Cancelar</button>
         </form>
 
         <h2>Animales registrados</h2>

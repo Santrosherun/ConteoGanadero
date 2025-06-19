@@ -67,3 +67,26 @@ export function inicializarFormDinamico() {
     fechaNacimientoInput.addEventListener('change', actualizarCamposVisibles);
     numeroPartosInput.addEventListener('input', actualizarCamposIntervalo);
 }
+
+export function cancelarEdicion(form, btnCancelar) {
+    // Limpiar estado de edición
+    if (typeof window.editandoId !== 'undefined') {
+        window.editandoId = null;
+    }
+
+    form.reset();
+    document.getElementById('btn-guardar').textContent = 'Guardar';
+    btnCancelar.style.display = 'none';
+
+    // Volver a estado limpio
+    document.getElementById('tipo').dispatchEvent(new Event('change'));
+    document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+
+    // Quitar el resaltado
+    document.querySelectorAll('#lista-animales li').forEach(li => {
+        li.classList.remove('editando');
+    });
+
+    // Opcional: devolver foco al primer campo
+    document.getElementById('codigo').focus();
+}

@@ -5,9 +5,10 @@ import {
     actualizarAnimal
 } from './db.js';
 
-import { calcularEdadMeses, inicializarFormDinamico } from './utils.js';
+import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion } from './utils.js';
 
 const form = document.getElementById('form-animal');
+const btnCancelar = document.getElementById('btn-cancelar');
 const lista = document.getElementById('lista-animales');
 let editandoId = null;
 
@@ -56,8 +57,20 @@ const renderAnimales = async () => {
             const id = parseInt(e.target.dataset.id);
             const animales = await obtenerAnimales();
             const animal = animales.find(a => a.id === id);
-            if (!animal) return;
 
+            btnCancelar.style.display = 'inline-block';
+            // Quitar resaltado previo
+            document.querySelectorAll('#lista-animales li').forEach(li => {
+                li.classList.remove('editando');
+            });
+
+            // Resaltar el <li> correspondiente al botón clicado
+            const liActual = e.target.closest('li');
+            if (liActual) {
+                liActual.classList.add('editando');
+            }
+
+            if (!animal) return;
             // Llenar el formulario
             document.getElementById('codigo').value = animal.codigo;
             document.getElementById('tipo').value = animal.tipo;
@@ -100,6 +113,9 @@ const renderAnimales = async () => {
     }
 
 };
+
+btnCancelar.addEventListener('click', () => cancelarEdicion(form, btnCancelar));
+
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
