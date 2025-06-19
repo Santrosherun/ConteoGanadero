@@ -48,20 +48,39 @@ export function inicializarFormDinamico() {
 
         if (!isNaN(numero) && numero > 0) {
             for (let i = 1; i <= numero; i++) {
+                // Crear contenedor para cada par label-input
+                const formField = document.createElement('div');
+                formField.className = 'form-field';
+
+                // Crear y configurar el label
                 const label = document.createElement('label');
                 label.textContent = `Parto ${i}:`;
+                label.style.whiteSpace = 'nowrap';
+                label.style.minWidth = '50px';
+                label.style.marginRight = '25px';
+                label.style.textAlign = 'right';
+                label.setAttribute('for', `parto-${i}`);
 
+                // Crear y configurar el input
                 const input = document.createElement('input');
                 input.type = 'date';
                 input.className = 'intervalo';
+                input.id = `parto-${i}`;
+                input.name = `parto-${i}`;
+                input.style.marginBottom = '5px';
+                input.style.marginTop = '5px';
                 input.required = true;
-                
-                contenedorIntervalos.appendChild(label);
-                contenedorIntervalos.appendChild(input);
-                contenedorIntervalos.appendChild(document.createElement('br'));
+
+                // Agregar label e input al contenedor
+                formField.appendChild(label);
+                formField.appendChild(input);
+
+                // Agregar contenedor al DOM
+                contenedorIntervalos.appendChild(formField);
             }
         }
     }
+
 
     tipoInput.addEventListener('change', actualizarCamposVisibles);
     fechaNacimientoInput.addEventListener('change', actualizarCamposVisibles);

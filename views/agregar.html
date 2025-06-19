@@ -1,36 +1,73 @@
-<section class="form-container">
-    <form id="form-animal">
-        <input type="text" id="codigo" placeholder="Código identificador" required />
+<h2 class="subtitulo">Agregar animales</h2>
+<main class="contenido-principal">
+    <section class="form-container">
+        <form id="form-animal">
+            <div class="form-grid">
+                <div class="form-columns">
+                    <!-- COLUMNAS A LA IZQUIERDA -->
+                    <div class="form-left">
+                        <div class="form-field">
+                            <label for="codigo">ID:</label>
+                            <input type="text" id="codigo" placeholder="Código identificador" required />
+                        </div>
 
-        <select id="tipo" required>
-            <option value="">-- Tipo --</option>
-            <option value="toro">Toro</option>
-            <option value="hembra">Hembra</option>
-        </select>
+                        <div class="form-field">
+                            <label for="tipo">Sexo:</label>
+                            <select id="tipo" required>
+                                <option value="">-- Tipo --</option>
+                                <option value="toro">Toro</option>
+                                <option value="hembra">Hembra</option>
+                            </select>
+                        </div>
 
-        <label for="fechaNacimiento">Fecha de nacimiento:</label>
-        <input type="date" id="fechaNacimiento" required />
+                        <div class="form-field">
+                            <div class="label-largo">
+                                <label for="fechaNacimiento">Fecha de nacimiento:</label>
+                            </div>
+                            <input type="date" id="fechaNacimiento" required />
+                        </div>
 
-        <!-- solo terneros -->
-        <div id="campo-amamantado" style="display:none;">
-            <input type="number" id="tiempoAmamantado" placeholder="Meses amamantado" min="0" />
-        </div>
+                        <!-- solo terneros -->
+                        <div id="campo-amamantado" style="display:none;">
+                            <div class="form-field">
+                                <div class="label-largo">
+                                    <label for="campo-amamantado">Tiempo amamantado:</label>
+                                </div>
+                                <input type="number" id="tiempoAmamantado" placeholder="Meses amamantado" min="0" />  
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUMNAS A LA DERECHA -->
+                    <div class="form-right">
+                        <!-- solo hembras adultas -->
+                        <div id="campos-partos" style="display:none;">
+                            <div class="form-field">
+                                <div class="label-largo">
+                                    <label for="campos-partos">Número de partos:</label>
+                                </div>
+                                <input type="number" id="numeroPartos" placeholder="Nº de partos" min="0" />
+                            </div>
+                            <div class="partos" id="contenedor-intervalos">
+                                    
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- solo hembras adultas -->
-        <div id="campos-partos" style="display:none;">
-            <input type="number" id="numeroPartos" placeholder="Nº de partos" min="0" />
-            <div id="contenedor-intervalos">
-                
-            </div>
-        </div>
-        <div class="form-buttons">
-            <button type="submit" id="btn-guardar">Guardar</button>
-            <button type="button" id="btn-cancelar" style="display:none;">Cancelar</button>
-            <a class="back-button" href="#">Volver</a>
-        </div>       
-    </form>
-</section>
+                    <div class="form-buttons">
+                        <button type="submit" id="btn-guardar">Guardar</button>
+                        <button type="button" id="btn-cancelar" style="display:none;">Cancelar</button>
+                        <a class="back-button" href="#">Volver</a>
+                    </div> 
+                    <p class="mensaje-exito">Agregado satisfactoriamente</p>   
+                </div>
+            </div>    
+        </form>
+    </section>
 
-<h2>Animales registrados</h2>
-<ul id="lista-animales"></ul>
+    <div class="lista-animales">
+        <h2>Animales registrados</h2>
+        <ul id="lista-animales"></ul>
+    </div>
+</main>
         
