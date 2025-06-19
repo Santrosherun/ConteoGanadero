@@ -91,3 +91,10 @@ header h1 { color: white; font-size: 2rem; }
   cursor: pointer;
   width: 120px;
 }
+.editando {
+  background-color: #f0f8ff;
+  border: 2px solid #2196f3;
+  border-radius: 5px;
+  padding: 6px;
+  margin-bottom: 4px;
+}
