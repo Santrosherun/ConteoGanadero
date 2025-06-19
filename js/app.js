@@ -266,6 +266,7 @@ function inicializarAgregar() {
         form.reset();
         document.getElementById('tipo').dispatchEvent(new Event('change'));
         document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+        cancelarEdicion(form, btnCancelar);
         inicializarFormDinamico();
         renderAnimales();
     });
