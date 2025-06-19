@@ -1,0 +1,36 @@
+<section class="form-container">
+    <form id="form-animal">
+        <input type="text" id="codigo" placeholder="Código identificador" required />
+
+        <select id="tipo" required>
+            <option value="">-- Tipo --</option>
+            <option value="toro">Toro</option>
+            <option value="hembra">Hembra</option>
+        </select>
+
+        <label for="fechaNacimiento">Fecha de nacimiento:</label>
+        <input type="date" id="fechaNacimiento" required />
+
+        <!-- solo terneros -->
+        <div id="campo-amamantado" style="display:none;">
+            <input type="number" id="tiempoAmamantado" placeholder="Meses amamantado" min="0" />
+        </div>
+
+        <!-- solo hembras adultas -->
+        <div id="campos-partos" style="display:none;">
+            <input type="number" id="numeroPartos" placeholder="Nº de partos" min="0" />
+            <div id="contenedor-intervalos">
+                
+            </div>
+        </div>
+        <div class="form-buttons">
+            <button type="submit" id="btn-guardar">Guardar</button>
+            <button type="button" id="btn-cancelar" style="display:none;">Cancelar</button>
+            <a class="back-button" href="#">Volver</a>
+        </div>       
+    </form>
+</section>
+
+<h2>Animales registrados</h2>
+<ul id="lista-animales"></ul>
+        
