@@ -1,0 +1,93 @@
+/* Reset + tipografía */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f0ea;
+  color: #006d67;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background: #006d67;
+  width: 100%;
+  text-align: center;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+header h1 { color: white; font-size: 2rem; }
+
+/* Menú principal: grid */
+#main-menu {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Botones-enlace estilo “píldora” */
+.menu-button,
+.back-button {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  background: #9dc9ca;
+  color: #006d67;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.5rem;
+  font-size: 1.1rem;
+  transition: transform 0.1s, box-shadow 0.2s;
+  margin: 0.5rem 0;
+}
+.menu-button:hover,
+.back-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Formulario en páginas secundarias */
+.form-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 600px;
+}
+.form-container h2 {
+  margin-bottom: 1rem;
+  color: #006d67;
+}
+.form-container form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.form-container input,
+.form-container select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  flex: 1 1 45%;
+  min-width: 180px;
+}
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+.form-buttons button {
+  background: #006d67;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  width: 120px;
+}
