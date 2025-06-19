@@ -130,18 +130,36 @@ function inicializarAgregar() {
                     contenedor.innerHTML = '';
     
                     for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
+                        // Crear contenedor para cada par label-input
+                        const formField = document.createElement('div');
+                        formField.className = 'form-field';
+
+                        // Crear y configurar el label
                         const label = document.createElement('label');
                         label.textContent = `Parto ${i + 1}:`;
+                        label.style.whiteSpace = 'nowrap';
+                        label.style.minWidth = '50px';
+                        label.style.marginRight = '25px';
+                        label.style.textAlign = 'right';
+                        label.setAttribute('for', `parto-${i + 1}`);
     
+                        // Crear y configurar el input
                         const input = document.createElement('input');
                         input.type = 'date';
                         input.className = 'intervalo';
+                        input.id = `parto-${i + 1}`;
+                        input.name = `parto-${i + 1}`;
+                        input.style.marginBottom = '5px';
+                        input.style.marginTop = '5px';
                         input.value = animal.intervaloParto?.[i] || '';
                         input.required = true;
-    
-                        contenedor.appendChild(label);
-                        contenedor.appendChild(input);
-                        contenedor.appendChild(document.createElement('br'));
+
+                        // Agregar label e input al contenedor
+                        formField.appendChild(label);
+                        formField.appendChild(input);
+                        
+                        // Agregar contenedor al DOM
+                        contenedor.appendChild(formField);
                     }
                 }
                 editandoId = id;
