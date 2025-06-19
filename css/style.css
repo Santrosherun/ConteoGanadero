@@ -16,7 +16,6 @@ header {
   width: 100%;
   text-align: center;
   padding: 1rem 0;
-  margin-bottom: 2rem;
 }
 header h1 { color: white; font-size: 2rem; }
 
@@ -50,31 +49,84 @@ header h1 { color: white; font-size: 2rem; }
 
 /* Formulario en páginas secundarias */
 .form-container {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 90%;
-  max-width: 600px;
+  background: transparent;   /* Eliminar fondo blanco */
+  padding: 0;                /* Quitar espacio interno */
+  border-radius: 0;          /* Sin esquinas redondeadas */
+  box-shadow: none;          /* Sin sombra */
+  width: 100%;               /* Que se ajuste al ancho disponible */
+  max-width: 1500px;          /* O el mismo ancho que el contenido principal */
+  margin: 0 auto;            /* Centrado horizontal */
 }
-.form-container h2 {
-  margin-bottom: 1rem;
-  color: #006d67;
-}
+
 .form-container form {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
 }
-.form-container input,
-.form-container select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  flex: 1 1 45%;
-  min-width: 180px;
+/* NUEVO: contenedor para las columnas */
+.form-columns {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+
+/* Columnas izquierda y derecha */
+.form-left,
+.form-right {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra todo horizontalmente */
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.form-field {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.form-field label {
+  font-weight: bold;
+  text-align: left;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  flex-grow: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 1.5rem;
+  background: #c0dddf;
+  color: #006d67;
+  font-size: 1rem;
+}
+
+.partos {
+  width: 100%;
+}
+
+.label-largo label {
+  min-width: 160px; /* solo para estos labels */
+  text-align: right;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
 .form-buttons {
   display: flex;
   gap: 1rem;
@@ -97,4 +149,35 @@ header h1 { color: white; font-size: 2rem; }
   border-radius: 5px;
   padding: 6px;
   margin-bottom: 4px;
+}
+.subtitulo {
+  width: 100vw; /* usa el 100% del viewport, no del contenedor */
+  background: #9dc9ca;
+  color: #006d67;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0; /* quita márgenes que lo empujan */
+}
+
+/* Contenedor global */
+.contenido-principal {
+  width: 100%;
+  max-width: 1500px; /* o el mismo valor que uses en form-container */
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+/* Sección lista de animales alineada a la izquierda */
+.lista-animales {
+  margin-top: 2rem;
+  text-align: left;
+}
+/* Mensaje agregado */
+#mensaje-exito {
+  text-align: center;
+  font-weight: bold;
+  color: #00796b;
+  margin-top: 1rem;
 }
