@@ -109,3 +109,16 @@ export function cancelarEdicion(form, btnCancelar) {
     // Opcional: devolver foco al primer campo
     document.getElementById('codigo').focus();
 }
+
+export function mostrarNotificacion(mensaje, tipo = 'exito', duracion = 3000) {
+    const div = document.getElementById('notificacion');
+    if (!div) return;
+    
+    div.textContent = mensaje;
+    div.className = `notificacion ${tipo} visible`;
+
+    setTimeout(() => {
+        div.classList.add('oculto');
+        div.classList.remove('visible');
+    }, duracion);
+}

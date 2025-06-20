@@ -45,7 +45,7 @@ import {
     actualizarAnimal
 } from './db.js';
 
-import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion } from './utils.js';
+import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion } from './utils.js';
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
@@ -84,6 +84,7 @@ function inicializarAgregar() {
             btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
                 await eliminarAnimal(id);
+                mostrarNotificacion('Animal eliminado correctamente.');
                 renderAnimales();
                 })
             );
@@ -271,9 +272,11 @@ function inicializarAgregar() {
         try {
             if (editandoId !== null) {
                 await actualizarAnimal(editandoId, nuevoAnimal);
+                mostrarNotificacion('Animal actualizado correctamente.');
                 editandoId = null;
             } else {
                 await agregarAnimal(nuevoAnimal);
+                mostrarNotificacion('Animal agregado correctamente.');
             }
         } catch (err) {
             alert('Ocurrió un error guardando el animal.');
