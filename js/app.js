@@ -83,9 +83,12 @@ function inicializarAgregar() {
             lista.querySelectorAll('.eliminar').forEach(btn =>
             btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
-                await eliminarAnimal(id);
-                mostrarNotificacion('Animal eliminado correctamente.');
-                renderAnimales();
+                const confirmacion = confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción no se puede deshacer.');
+                if (confirmacion) {
+                    await eliminarAnimal(id);
+                    mostrarNotificacion('Animal eliminado correctamente.');
+                    renderAnimales();
+                }
                 })
             );
         } catch (err) {
