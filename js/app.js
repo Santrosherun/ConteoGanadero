@@ -45,7 +45,7 @@ import {
     actualizarAnimal
 } from './db.js';
 
-import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion } from './utils.js';
+import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion, formatearEdad } from './utils.js';
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
@@ -61,7 +61,7 @@ function inicializarAgregar() {
         animales.forEach(animal => {
             const li = document.createElement('li');
             li.innerHTML = `
-            <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses</strong><br/>
+            <strong>${animal.codigo} — ${animal.tipo} — ${formatearEdad(animal.fechaNacimiento)}</strong><br/>
             ${
                 animal.esTernero
                     ? `Amamantado: ${animal.tiempoAmamantado} meses`

@@ -7,6 +7,28 @@ export function calcularEdadMeses(fechaStr) {
     return años * 12 + meses;
 }
 
+export function formatearEdad(fechaNacimientoStr) {
+    const fechaNac = new Date(fechaNacimientoStr);
+    const hoy = new Date();
+
+    const diferenciaMs = hoy - fechaNac;
+    const dias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+    const semanas = Math.floor(dias / 7);
+    const meses = Math.floor(dias / 30.44); // promedio de días en un mes
+    const años = Math.floor(meses / 12);
+    const mesesRestantes = meses % 12;
+
+    if (dias < 1) return "menos de un día";
+    if (dias === 1) return "1 día";
+    if (dias < 7) return `${dias} días`;
+    if (semanas === 1) return "1 semana";
+    if (meses < 1) return `${semanas} semanas`;
+    if (meses === 1) return "1 mes";
+    if (años < 1) return `${meses} meses`;
+    if (mesesRestantes === 0) return `${años} año${años === 1 ? '' : 's'}`;
+    return `${años} año${años === 1 ? '' : 's'} y ${mesesRestantes} mes${mesesRestantes === 1 ? '' : 'es'}`;
+}
+
 export function inicializarFormDinamico() {
     const tipoInput = document.getElementById('tipo');
     const fechaNacimientoInput = document.getElementById('fechaNacimiento');
