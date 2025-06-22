@@ -124,8 +124,8 @@ export function cancelarEdicion(form, btnCancelar) {
     document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
 
     // Quitar el resaltado
-    document.querySelectorAll('#lista-animales li').forEach(li => {
-        li.classList.remove('editando');
+    document.querySelectorAll('#lista-animales tr').forEach(tr => {
+        tr.classList.remove('editando');
     });
 
     // Opcional: devolver foco al primer campo
