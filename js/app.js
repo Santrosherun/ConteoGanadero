@@ -46,16 +46,25 @@ import {
 } from './db.js';
 
 import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion, formatearEdad } from './utils.js';
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
     const btnCancelar = document.getElementById('btn-cancelar');
     const lista = document.getElementById('lista-animales');
     let editandoId = null;
+    let animalesGlobal = [];
 
-    const renderAnimales = async () => {
+    // Al inicio de inicializarAgregar(), antes de renderAnimales:
+    obtenerAnimales((lista) => {
+        // listaAnimales viene de Firestore: [{ id, codigo, tipo, fechaNacimiento, ... }, …]
+        animalesGlobal = lista;
+        renderAnimales(lista);
+    });
+
+    const renderAnimales = (animales) => {
         
-        const animales = await obtenerAnimales(); 
+         
         
         lista.innerHTML = '';
 
@@ -95,12 +104,11 @@ function inicializarAgregar() {
         try {
             lista.querySelectorAll('.eliminar').forEach(btn =>
             btn.addEventListener('click', async (e) => {
-                const id = parseInt(e.target.dataset.id);
+                const id = e.target.dataset.id;
                 const confirmacion = confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción no se puede deshacer.');
                 if (confirmacion) {
                     await eliminarAnimal(id);
                     mostrarNotificacion('Animal eliminado correctamente.');
-                    renderAnimales();
                 }
                 })
             );
@@ -112,9 +120,8 @@ function inicializarAgregar() {
         try {
         document.querySelectorAll('.editar').forEach(btn =>
             btn.addEventListener('click', async (e) => {
-                const id = parseInt(e.target.dataset.id);
-                const animales = await obtenerAnimales();
-                const animal = animales.find(a => a.id === id);
+                const id = e.target.dataset.id;
+                const animal = animalesGlobal.find(a => a.id === id);
     
                 btnCancelar.style.display = 'inline-block';
                 // Quitar resaltado previo
@@ -305,9 +312,9 @@ function inicializarAgregar() {
         document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
         cancelarEdicion(form, btnCancelar);
         inicializarFormDinamico();
-        renderAnimales();
+        // renderAnimales();
     });
     
     inicializarFormDinamico();
-    renderAnimales();
+    // renderAnimales();
 }
