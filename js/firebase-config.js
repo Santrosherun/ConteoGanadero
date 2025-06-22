@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCEl0DGrU5efLGEjXkA7Mx2P__ulBg_gE4",
+  apiKey: "AIzaSyB-ZcTtvcrRYJq4i9PaHvbXW1Q8554WO_E",
   authDomain: "conteoganadero1.firebaseapp.com",
   projectId: "conteoganadero1",
   storageBucket: "conteoganadero1.appspot.com",
