@@ -45,7 +45,7 @@ import {
     actualizarAnimal
 } from './db.js';
 
-import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion } from './utils.js';
+import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion, formatearEdad } from './utils.js';
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
@@ -74,7 +74,7 @@ function inicializarAgregar() {
             tr.innerHTML = `
                 <td>${animal.codigo}</td>
                 <td>${animal.tipo}</td>
-                <td>${animal.edadEnMeses} meses</td>
+                <td>${formatearEdad(animal.fechaNacimiento)} meses</td>
                 <td>${numeroDePartos}</td>
                 <td class="datos-repro">${fechasParto}</td>
                 <td class="datos-repro">${tiempoAmamantado}</td>
@@ -96,8 +96,12 @@ function inicializarAgregar() {
             lista.querySelectorAll('.eliminar').forEach(btn =>
             btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
-                await eliminarAnimal(id);
-                renderAnimales();
+                const confirmacion = confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción no se puede deshacer.');
+                if (confirmacion) {
+                    await eliminarAnimal(id);
+                    mostrarNotificacion('Animal eliminado correctamente.');
+                    renderAnimales();
+                }
                 })
             );
         } catch (err) {
@@ -284,9 +288,11 @@ function inicializarAgregar() {
         try {
             if (editandoId !== null) {
                 await actualizarAnimal(editandoId, nuevoAnimal);
+                mostrarNotificacion('Animal actualizado correctamente.');
                 editandoId = null;
             } else {
                 await agregarAnimal(nuevoAnimal);
+                mostrarNotificacion('Animal agregado correctamente.');
             }
         } catch (err) {
             alert('Ocurrió un error guardando el animal.');
