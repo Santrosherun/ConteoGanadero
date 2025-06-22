@@ -144,11 +144,7 @@ header h1 { color: white; font-size: 2rem; }
   width: 120px;
 }
 .editando {
-  background-color: #f0f8ff;
-  border: 2px solid #2196f3;
-  border-radius: 5px;
-  padding: 6px;
-  margin-bottom: 4px;
+  background-color: #ffe58f
 }
 .subtitulo {
   width: 100vw; /* usa el 100% del viewport, no del contenedor */

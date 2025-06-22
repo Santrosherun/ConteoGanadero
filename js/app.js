@@ -124,16 +124,13 @@ function inicializarAgregar() {
                 const animal = animalesGlobal.find(a => a.id === id);
     
                 btnCancelar.style.display = 'inline-block';
-                // Quitar resaltado previo
-                document.querySelectorAll('#lista-animales li').forEach(li => {
-                    li.classList.remove('editando');
+                document.querySelectorAll('#lista-animales tr').forEach(tr => {
+                    tr.classList.remove('editando');
                 });
-    
-                // Resaltar el <li> correspondiente al botón clicado
-                const liActual = e.target.closest('li');
-                if (liActual) {
-                    liActual.classList.add('editando');
-                }
+
+                // Resaltar fila actual
+                const fila = e.target.closest('tr');
+                if (fila) fila.classList.add('editando');
     
                 if (!animal) return;
                 // Llenar el formulario
