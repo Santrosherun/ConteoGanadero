@@ -56,26 +56,39 @@ function inicializarAgregar() {
     const renderAnimales = async () => {
         
         const animales = await obtenerAnimales(); 
+        
         lista.innerHTML = '';
-    
+
         animales.forEach(animal => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-            <strong>${animal.codigo} — ${animal.tipo} — ${animal.edadEnMeses} meses</strong><br/>
-            ${
-                animal.esTernero
-                    ? `Amamantado: ${animal.tiempoAmamantado} meses`
-                    : (animal.tipo === 'hembra'
-                        ? `Partos: ${animal.numeroDePartos}, Eventos: ${(animal.intervaloParto || []).join(', ')}`
-                        : `Adulto sin datos reproductivos (por ahora)`
-                    )
-            }
-            <button data-id="${animal.id}" class="editar">Editar</button>
-            <button data-id="${animal.id}" class="eliminar">Eliminar</button>
+            const tr = document.createElement('tr');
+
+            const numeroDePartos = animal.tipo === 'hembra' ? animal.numeroDePartos ?? 'N/A' : 'N/A';
+            const fechasParto = animal.tipo === 'hembra' && animal.intervaloParto
+                ? animal.intervaloParto.map(f => `<div>${f}</div>`).join('')
+                : 'N/A';
+
+            const tiempoAmamantado = animal.esTernero
+                ? `${animal.tiempoAmamantado} meses`
+                : 'N/A';
+
+            tr.innerHTML = `
+                <td>${animal.codigo}</td>
+                <td>${animal.tipo}</td>
+                <td>${animal.edadEnMeses} meses</td>
+                <td>${numeroDePartos}</td>
+                <td class="datos-repro">${fechasParto}</td>
+                <td class="datos-repro">${tiempoAmamantado}</td>
+                <td>
+                <button data-id="${animal.id}" class="editar">Editar</button>
+                <button data-id="${animal.id}" class="eliminar">Eliminar</button>
+                </td>
             `;
-            lista.appendChild(li);
+            lista.appendChild(tr);
         });
-    
+
+
+
+
         // Asignar eventos a los botones
         //ELIMINAR
     

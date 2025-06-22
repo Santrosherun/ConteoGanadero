@@ -181,3 +181,52 @@ header h1 { color: white; font-size: 2rem; }
   color: #00796b;
   margin-top: 1rem;
 }
+
+/* TABLA DE ANIMALES REGISTRADOS */
+/* Tabla centrada */
+.tabla-animales {
+  margin: 2rem auto;
+  width: 95%;
+  max-width: 1100px;
+  border-collapse: collapse;
+  font-family: sans-serif;
+  background-color: #fdfdf9;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Encabezados */
+.tabla-animales thead {
+  background-color: #006d67;
+  color: white;
+  text-align: center;
+}
+
+/* Celdas */
+.tabla-animales th,
+.tabla-animales td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Datos reproductivos alineados a la izquierda */
+.tabla-animales td.datos-repro {
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Botones */
+.tabla-animales button {
+  background-color: #006d67;
+  color: white;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  margin: 0 0.2rem;
+  cursor: pointer;
+}
+
+.tabla-animales button:hover {
+  background-color: #004c4a;
+}
