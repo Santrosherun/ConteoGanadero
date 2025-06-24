@@ -2,7 +2,11 @@
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
   getFirestore,
-  enableMultiTabIndexedDbPersistence
+  enableMultiTabIndexedDbPersistence, 
+  collection,
+  getDocs,
+  query,    
+  where   
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -20,6 +24,12 @@ const app = initializeApp(firebaseConfig);
 
 // 2) Inicializa Firestore
 export const db = getFirestore(app);
+
+export async function codigoExisteEnFirebase(codigo) {
+        const q = query(collection(db, 'animales'), where('codigo', '==', codigo));
+        const snapshot = await getDocs(q);
+        return !snapshot.empty; // retorna true si ya existe
+    }
 
 // 3) Habilita persistencia offline en múltiples pestañas
 enableMultiTabIndexedDbPersistence(db)

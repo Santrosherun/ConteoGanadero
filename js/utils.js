@@ -116,17 +116,12 @@ export function cancelarEdicion(form, btnCancelar) {
     }
 
     form.reset();
-    document.getElementById('btn-guardar').textContent = 'Guardar';
+    document.getElementById('btn-guardar').textContent = 'Buscar';
     btnCancelar.style.display = 'none';
 
     // Volver a estado limpio
     document.getElementById('tipo').dispatchEvent(new Event('change'));
     document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
-
-    // Quitar el resaltado
-    document.querySelectorAll('#lista-animales tr').forEach(tr => {
-        tr.classList.remove('editando');
-    });
 
     // Opcional: devolver foco al primer campo
     document.getElementById('codigo').focus();

@@ -1,4 +1,4 @@
-<h2 class="subtitulo">Agregar animales</h2>
+<h2 class="subtitulo">Modificar animales</h2>
 <main>
     <section class="form-container">
         <form id="form-animal">
@@ -8,23 +8,23 @@
                     <div class="form-left">
                         <div class="form-field">
                             <label for="codigo">ID:</label>
-                            <input type="text" id="codigo" placeholder="Código identificador" required />
+                            <input type="text" id="codigo" placeholder="Ingresa Código a buscar" required />
                         </div>
 
-                        <div class="form-field">
+                        <div class="form-field" id="contenedor-tipo">
                             <label for="tipo">Sexo:</label>
-                            <select id="tipo" required>
+                            <select id="tipo" >
                                 <option value="">-- Tipo --</option>
                                 <option value="toro">Toro</option>
                                 <option value="hembra">Hembra</option>
                             </select>
                         </div>
 
-                        <div class="form-field">
+                        <div class="form-field" id="contenedor-fechaN">
                             <div class="label-largo">
                                 <label for="fechaNacimiento">Fecha de nacimiento:</label>
                             </div>
-                            <input type="date" id="fechaNacimiento" required />
+                            <input type="date" id="fechaNacimiento"  />
                         </div>
 
                         <!-- solo terneros -->
@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="form-buttons">
-                        <button type="submit" id="btn-guardar">Guardar</button>
+                        <button type="button" id="btn-guardar">Guardar</button>
                         <button type="button" id="btn-cancelar" style="display:none;">Cancelar</button>
                     </div> 
                 </div>
@@ -63,27 +63,5 @@
         </form>
         <div id="notificacion" class="notificacion oculto"></div>     
     </section>
-
-    <div class="lista-animales">
-        <h2>Animales registrados</h2>
-        <div class="tabla-responsive">
-            <table class="tabla-animales">
-                <thead>
-                    <tr>
-                    <th>Código</th>
-                    <th>Tipo</th>
-                    <th>Edad</th>
-                    <th>N° Partos</th>
-                    <th>Fechas de Partos</th>
-                    <th>Tiempo Amamantado</th>
-                    <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-animales">
-                    <!-- Aquí el JS insertará las filas dinámicamente -->
-                </tbody>
-            </table>
-        </div>
-    </div>
 </main>
         

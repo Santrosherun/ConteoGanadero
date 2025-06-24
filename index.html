@@ -10,14 +10,23 @@
     <body>
         <header>
             <h1>Gestor de Ganado</h1>
+            <a href="#/" class="menu-principal-btn" aria-label="Volver al menú principal">
+                <span class="texto">Menú principal</span>
+                <span class="flecha">⬅</span>
+            </a>
         </header>
 
         <main id="content"></main>
         
-        <script type="module">
-            import Dexie from 'https://unpkg.com/dexie@3.2.4/dist/dexie.mjs';
-            window.Dexie = Dexie;
-        </script>
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2025 Gestor de Ganado. Todos los derechos reservados.</p>
+                <p>Contáctanos: 
+                <a href="mailto:soporte@ganadoapp.com">soporte@ganadoapp.com</a> | 
+                <a href="mailto:admin@ganadoapp.com">admin@ganadoapp.com</a>
+                </p>
+            </div>
+        </footer>
 
         <script type="module" src="js/firebase-config.js"></script>
 

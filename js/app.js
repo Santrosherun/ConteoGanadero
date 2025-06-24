@@ -1,37 +1,45 @@
 //MANEJO DE VISTAS
 const routes = {
-  '': '/views/main.html',
-  '#/agregar': '/views/agregar.html',
-//   '#/modificar': '/views/modificar.html',
-//   '#/eliminar': '/views/eliminar.html',
-//   '#/mostrar-vacas': '/views/mostrar-vacas.html',
-//   '#/mostrar-toros': '/views/mostrar-toros.html',
-//   '#/mostrar-terneros': '/views/mostrar-terneros.html',
-//   '#/mostrar-todos': '/views/mostrar-todos.html',
-//   '#/informes': '/views/informes.html',
+    '': '/views/main.html',
+    '#/agregar': '/views/agregar.html',
+    '#/modificar': '/views/modificar.html',
+    '#/mostrar-todos': '/views/mostrar-todos.html',
+    '#/mostrar-vacas': '/views/mostrar-vacas.html',
+    //   '#/eliminar': '/views/eliminar.html',
+    //   '#/mostrar-toros': '/views/mostrar-toros.html',
+    //   '#/mostrar-terneros': '/views/mostrar-terneros.html',
+    //   '#/informes': '/views/informes.html',
 };
 
 async function loadView(viewUrl) {
-  try {
-    const res = await fetch(viewUrl);
-    const html = await res.text();
-    // Reemplaza lo que hay en el main con todo el fragmento de código de lo escogido
-    document.getElementById('content').innerHTML = html; // Aquí insertas la vista en el DOM
+    try {
+        const res = await fetch(viewUrl);
+        const html = await res.text();
+        // Reemplaza lo que hay en el main con todo el fragmento de código de lo escogido
+        document.getElementById('content').innerHTML = html; // Aquí insertas la vista en el DOM
 
-    // Re-inicializa lo necesario según la vista cargada
-    if (viewUrl.includes('agregar.html')) {
-      inicializarAgregar();
+        // Re-inicializa lo necesario según la vista cargada
+        if (viewUrl.includes('agregar.html')){
+            inicializarAgregar();
+        }
+        
+        if (viewUrl.includes('modificar.html')){
+            inicializarModificar();
+        }
+        
+        if (viewUrl.includes('mostrar-todos.html')){
+            mostrarTodos();
+        }
+
+    } catch (err) {
+        document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
     }
-
-  } catch (err) {
-    document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
-  }
 }
 
 function router() {
-  const hash = window.location.hash;
-  const view = routes[hash] || routes[''];
-  loadView(view);
+    const hash = window.location.hash;
+    const view = routes[hash] || routes[''];
+    loadView(view);
 }
 
 window.addEventListener('hashchange', router);
@@ -46,13 +54,13 @@ import {
 } from './db.js';
 
 import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion, formatearEdad } from './utils.js';
-import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { codigoExisteEnFirebase } from './firebase-config.js'
+
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
     const btnCancelar = document.getElementById('btn-cancelar');
     const lista = document.getElementById('lista-animales');
-    let editandoId = null;
     let animalesGlobal = [];
 
     // Al inicio de inicializarAgregar(), antes de renderAnimales:
@@ -63,9 +71,7 @@ function inicializarAgregar() {
     });
 
     const renderAnimales = (animales) => {
-        
-         
-        
+
         lista.innerHTML = '';
 
         animales.forEach(animal => {
@@ -83,20 +89,16 @@ function inicializarAgregar() {
             tr.innerHTML = `
                 <td>${animal.codigo}</td>
                 <td>${animal.tipo}</td>
-                <td>${formatearEdad(animal.fechaNacimiento)} meses</td>
+                <td>${formatearEdad(animal.fechaNacimiento)}</td>
                 <td>${numeroDePartos}</td>
                 <td class="datos-repro">${fechasParto}</td>
                 <td class="datos-repro">${tiempoAmamantado}</td>
                 <td>
-                <button data-id="${animal.id}" class="editar">Editar</button>
                 <button data-id="${animal.id}" class="eliminar">Eliminar</button>
                 </td>
             `;
             lista.appendChild(tr);
         });
-
-
-
 
         // Asignar eventos a los botones
         //ELIMINAR
@@ -115,88 +117,7 @@ function inicializarAgregar() {
         } catch (err) {
             alert('Ocurrió un error eliminando el animal.')
         }
-    
-        //EDITAR
-        try {
-        document.querySelectorAll('.editar').forEach(btn =>
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-                const animal = animalesGlobal.find(a => a.id === id);
-    
-                btnCancelar.style.display = 'inline-block';
-                document.querySelectorAll('#lista-animales tr').forEach(tr => {
-                    tr.classList.remove('editando');
-                });
-
-                // Resaltar fila actual
-                const fila = e.target.closest('tr');
-                if (fila) fila.classList.add('editando');
-    
-                if (!animal) return;
-                // Llenar el formulario
-                document.getElementById('codigo').value = animal.codigo;
-                document.getElementById('tipo').value = animal.tipo;
-                document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
-    
-                // Forzar actualización visual de campos condicionales
-                document.getElementById('tipo').dispatchEvent(new Event('change'));
-                document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
-    
-                if (animal.esTernero) {
-                    document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
-                } else if (animal.tipo === 'hembra') {
-                    document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
-    
-                    const contenedor = document.getElementById('contenedor-intervalos');
-                    contenedor.innerHTML = '';
-    
-                    for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
-                        // Crear contenedor para cada par label-input
-                        const formField = document.createElement('div');
-                        formField.className = 'form-field';
-
-                        // Crear y configurar el label
-                        const label = document.createElement('label');
-                        label.textContent = `Parto ${i + 1}:`;
-                        label.style.whiteSpace = 'nowrap';
-                        label.style.minWidth = '50px';
-                        label.style.marginRight = '25px';
-                        label.style.textAlign = 'right';
-                        label.setAttribute('for', `parto-${i + 1}`);
-    
-                        // Crear y configurar el input
-                        const input = document.createElement('input');
-                        input.type = 'date';
-                        input.className = 'intervalo';
-                        input.id = `parto-${i + 1}`;
-                        input.name = `parto-${i + 1}`;
-                        input.style.marginBottom = '5px';
-                        input.style.marginTop = '5px';
-                        input.value = animal.intervaloParto?.[i] || '';
-                        input.required = true;
-
-                        // Agregar label e input al contenedor
-                        formField.appendChild(label);
-                        formField.appendChild(input);
-                        
-                        // Agregar contenedor al DOM
-                        contenedor.appendChild(formField);
-                    }
-                }
-                editandoId = id;
-                document.getElementById('btn-guardar').textContent = 'Actualizar';
-        
-              })
-            );
-        } catch (err) {
-            alert('Ocurrió un error obteniendo el animal.')
-        }
-    
     };
-    
-    btnCancelar.addEventListener('click', () => cancelarEdicion(form, btnCancelar));
-    
-    
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
     
@@ -220,35 +141,6 @@ function inicializarAgregar() {
                 .map(input => input.value)
                 .filter(val => val !== '')
             : null;
-        // VALIDACIONES POSIBLES (MUY INTRUSIVAS)
-    
-        // if (!codigo || !tipo || !fechaNacimiento) {
-        // alert('Por favor completa todos los campos obligatorios.');
-        // return;
-        // }
-    
-        // if (esTernero) {
-        //     if (document.getElementById('tiempoAmamantado').value === '') {
-        //         alert('Ingresa el tiempo amamantado del ternero.');
-        //         return;
-        //     }
-        // }
-    
-        // if (!esTernero && tipo === 'hembra') {
-        //     if (document.getElementById('numeroPartos').value === '') {
-        //         alert('Ingresa el número de partos.');
-        //         return;
-        //     }
-        //     const campos = Array.from(document.querySelectorAll('.intervalo'));
-        //     const algunaVacia = campos.some(input => input.value.trim() === '');
-        //     if (algunaVacia) {
-        //         alert('Por favor completa todas las fechas de parto.');
-        //         return;
-        //     }
-        // }
-    
-        // Validar fechas cronológicas
-    
         
         if (!esTernero && tipo === 'hembra') {
             if (numeroDePartos > edadEnMeses) {
@@ -287,19 +179,17 @@ function inicializarAgregar() {
             intervaloParto
         };
         
-        // ACTUALIZAR
     
         try {
-            if (editandoId !== null) {
-                await actualizarAnimal(editandoId, nuevoAnimal);
-                mostrarNotificacion('Animal actualizado correctamente.');
-                editandoId = null;
-            } else {
-                await agregarAnimal(nuevoAnimal);
-                mostrarNotificacion('Animal agregado correctamente.');
+            const existeCodigo = await codigoExisteEnFirebase(codigo);
+            if (existeCodigo) {
+                alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
+                return;
             }
-        } catch (err) {
-            alert('Ocurrió un error guardando el animal.');
+            await agregarAnimal(nuevoAnimal);
+            mostrarNotificacion('Animal agregado correctamente.');
+            } catch (err) {
+                alert('Ocurrió un error guardando el animal.');
         }
     
     
@@ -314,4 +204,277 @@ function inicializarAgregar() {
     
     inicializarFormDinamico();
     // renderAnimales();
+}
+
+function mostrarTodos() {
+    const lista = document.getElementById('lista-animales');
+    const head = document.getElementById('tabla-head');
+    const selectFiltro = document.getElementById('filtro-tipo');
+    let animalesGlobal = [];
+
+    // Cargar desde base de datos
+    obtenerAnimales((listaDB) => {
+        animalesGlobal = listaDB;
+        renderAnimales(animalesGlobal, 'todos');
+    });
+
+    // Evento para filtrar
+    selectFiltro.addEventListener('change', (e) => {
+        const tipoSeleccionado = e.target.value;
+
+        const filtrados = tipoSeleccionado === 'todos'
+            ? animalesGlobal
+            : animalesGlobal.filter(animal => {
+                if (tipoSeleccionado === 'ternero') return animal.esTernero;
+                return animal.tipo === tipoSeleccionado;
+            });
+
+        renderAnimales(filtrados, tipoSeleccionado);
+    });
+
+    // Renderizar la tabla dinámicamente
+    function renderAnimales(animales, filtro = 'todos') {
+        lista.innerHTML = '';
+
+        // Construcción dinámica de encabezados
+        let titulo = '';
+        const cantidad = animales.length;
+
+        switch (filtro) {
+            case 'hembra':
+                titulo = `Vacas Registradas (${cantidad})`;
+                break;
+            case 'toro':
+                titulo = `Toros Registrados (${cantidad})`;
+                break;
+            case 'ternero':
+                titulo = `Terneros Registrados (${cantidad})`;
+                break;
+            default:
+                titulo = `Todos los animales registrados (${cantidad})`;
+        }
+
+        // Construir primera fila estilo subtitulo
+        let encabezado = `
+            <tr class="subtitulo-row">
+                <th colspan="6" class="subtitulo">${titulo}</th>
+            </tr>
+            <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Edad</th>
+        `;
+
+        if (filtro === 'hembra') {
+            encabezado += `
+                <th>N° Partos</th>
+                <th>Fechas de Partos</th>
+            `;
+        } else if (filtro === 'ternero') {
+            encabezado += `<th>Tiempo Amamantado</th>`;
+        }
+
+        head.innerHTML = encabezado += '</tr>';
+
+        // Crear filas
+        animales.forEach(animal => {
+            const tr = document.createElement('tr');
+            const edad = formatearEdad(animal.fechaNacimiento);
+
+            let fila = `
+                <td>${animal.codigo}</td>
+                <td>${animal.tipo}</td>
+                <td>${edad}</td>
+            `;
+
+            if (filtro === 'hembra') {
+                const nPartos = animal.numeroDePartos ?? 'N/A';
+                const fechas = animal.intervaloParto
+                    ? animal.intervaloParto.map(f => `<div>${f}</div>`).join('')
+                    : 'N/A';
+                fila += `
+                    <td>${nPartos}</td>
+                    <td class="datos-repro">${fechas}</td>
+                `;
+            } else if (filtro === 'ternero') {
+                const tiempo = animal.tiempoAmamantado ?? 'N/A';
+                fila += `<td class="datos-repro">${tiempo} meses</td>`;
+            }
+
+            tr.innerHTML = fila;
+            lista.appendChild(tr);
+        });
+    }
+}
+
+function inicializarModificar() {
+    const form = document.getElementById('form-animal');
+    const btnBuscar = document.getElementById('btn-guardar');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    let editandoId = null;
+    let animalesGlobal = [];
+    document.getElementById('contenedor-tipo').style.display = 'none'
+    document.getElementById('contenedor-fechaN').style.display = 'none'
+
+    obtenerAnimales((lista) => {
+        animalesGlobal = lista;
+    });
+
+    btnBuscar.textContent = 'Buscar';
+
+    btnBuscar.addEventListener('click', async () => {
+        const modo = btnBuscar.textContent;
+
+        if (modo === 'Buscar') {
+            const codigoBuscado = document.getElementById('codigo').value.trim();
+            const animal = animalesGlobal.find(a => a.codigo === codigoBuscado);
+
+            if (!codigoBuscado) {
+                alert('Ingresa un código para buscar.');
+                return;
+            }
+
+            if (!animal) {
+                alert('No se encontró ningún animal con ese código.');
+                form.reset();
+                return;
+            }
+
+            document.getElementById('contenedor-tipo').style.display = 'flex'
+            document.getElementById('contenedor-fechaN').style.display = 'flex'
+
+            btnCancelar.style.display = 'inline-block';
+
+            document.getElementById('codigo').value = animal.codigo;
+            document.getElementById('tipo').value = animal.tipo;
+            document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
+
+            document.getElementById('tipo').dispatchEvent(new Event('change'));
+            document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+
+            if (animal.esTernero) {
+                document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
+            } else if (animal.tipo === 'hembra') {
+                document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
+
+                const contenedor = document.getElementById('contenedor-intervalos');
+                contenedor.innerHTML = '';
+
+                for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
+                    const formField = document.createElement('div');
+                    formField.className = 'form-field';
+
+                    const label = document.createElement('label');
+                    label.textContent = `Parto ${i + 1}:`;
+                    label.setAttribute('for', `parto-${i + 1}`);
+
+                    const input = document.createElement('input');
+                    input.type = 'date';
+                    input.className = 'intervalo';
+                    input.id = `parto-${i + 1}`;
+                    input.name = `parto-${i + 1}`;
+                    input.value = animal.intervaloParto?.[i] || '';
+                    input.required = true;
+
+                    formField.appendChild(label);
+                    formField.appendChild(input);
+                    contenedor.appendChild(formField);
+                }
+            }
+
+            editandoId = animal.id;
+            btnBuscar.textContent = 'Actualizar';
+        } else if (modo === 'Actualizar') {
+            form.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    btnCancelar.addEventListener('click', () => cancelarEdicion(form, btnCancelar));
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const codigo = document.getElementById('codigo').value.trim() || 'SIN-CODIGO';
+        const tipo = document.getElementById('tipo').value;
+        const fechaNacimiento = document.getElementById('fechaNacimiento').value;
+        const edadEnMeses = calcularEdadMeses(fechaNacimiento);
+        const esTernero = edadEnMeses < 12;
+
+        const tiempoAmamantado = esTernero
+            ? parseInt(document.getElementById('tiempoAmamantado').value) || 0
+            : null;
+
+        const numeroDePartos = (!esTernero && tipo === 'hembra')
+            ? parseInt(document.getElementById('numeroPartos').value) || 0
+            : null;
+
+        const intervaloParto = (!esTernero && tipo === 'hembra')
+            ? Array.from(document.querySelectorAll('.intervalo'))
+                .map(input => input.value)
+                .filter(val => val !== '')
+            : null;
+
+        if (!esTernero && tipo === 'hembra') {
+            if (numeroDePartos > edadEnMeses) {
+                alert(`Una hembra de ${edadEnMeses} meses no puede haber tenido ${numeroDePartos} partos.`);
+                return;
+            }
+
+            const fechaNac = new Date(fechaNacimiento);
+            for (let i = 0; i < intervaloParto.length; i++) {
+                const fechaParto = new Date(intervaloParto[i]);
+                if (fechaParto < fechaNac) {
+                    alert(`El parto ${i + 1} no puede ser anterior a la fecha de nacimiento.`);
+                    return;
+                }
+            }
+
+            for (let i = 1; i < intervaloParto.length; i++) {
+                const anterior = new Date(intervaloParto[i - 1]);
+                const actual = new Date(intervaloParto[i]);
+                if (actual < anterior) {
+                    alert('Las fechas de parto deben estar en orden cronológico.');
+                    return;
+                }
+            }
+        }
+
+        const nuevoAnimal = {
+            codigo,
+            tipo,
+            fechaNacimiento,
+            edadEnMeses,
+            esTernero,
+            tiempoAmamantado,
+            numeroDePartos,
+            intervaloParto
+        };
+
+        try {
+            if (editandoId !== null) {
+                await actualizarAnimal(editandoId, nuevoAnimal);
+                mostrarNotificacion('Animal actualizado correctamente.');
+                editandoId = null;
+            } else {
+                const existeCodigo = await codigoExisteEnFirebase(codigo);
+                if (existeCodigo) {
+                    alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
+                    return;
+                }
+                await agregarAnimal(nuevoAnimal);
+                mostrarNotificacion('Animal agregado correctamente.');
+            }
+        } catch (err) {
+            alert('Ocurrió un error guardando el animal.');
+        }
+
+        btnBuscar.textContent = 'Buscar';
+        form.reset();
+        document.getElementById('tipo').dispatchEvent(new Event('change'));
+        document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+        cancelarEdicion(form, btnCancelar);
+        inicializarFormDinamico();
+    });
+
+    inicializarFormDinamico();
 }
