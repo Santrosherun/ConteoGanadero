@@ -1,5 +1,5 @@
 <h2 class="subtitulo">Agregar animales</h2>
-<main class="contenido-principal">
+<main>
     <section class="form-container">
         <form id="form-animal">
             <div class="form-grid">
@@ -67,23 +67,24 @@
 
     <div class="lista-animales">
         <h2>Animales registrados</h2>
-        <table class="tabla-animales">
-            <thead>
-                <tr>
-                <th>Código</th>
-                <th>Tipo</th>
-                <th>Edad</th>
-                <th>N° Partos</th>
-                <th>Fechas de Partos</th>
-                <th>Tiempo Amamantado</th>
-                <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="lista-animales">
-                <!-- Aquí el JS insertará las filas dinámicamente -->
-            </tbody>
-        </table>
-
+        <div class="tabla-responsive">
+            <table class="tabla-animales">
+                <thead>
+                    <tr>
+                    <th>Código</th>
+                    <th>Tipo</th>
+                    <th>Edad</th>
+                    <th>N° Partos</th>
+                    <th>Fechas de Partos</th>
+                    <th>Tiempo Amamantado</th>
+                    <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-animales">
+                    <!-- Aquí el JS insertará las filas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
         
