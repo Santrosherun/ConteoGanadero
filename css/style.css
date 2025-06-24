@@ -47,6 +47,11 @@ header h1 { color: white; font-size: 2rem; }
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+/* Contenedor global */
+#content {
+  width: 100%;
+}
+
 /* Formulario en páginas secundarias */
 .form-container {
   background: transparent;   /* Eliminar fondo blanco */
@@ -68,7 +73,7 @@ header h1 { color: white; font-size: 2rem; }
 .form-columns {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
@@ -83,6 +88,7 @@ header h1 { color: white; font-size: 2rem; }
 }
 
 .form-grid {
+  width: 80%;
   display: flex;
   flex-direction: column;
   align-items: center; /* Centra todo horizontalmente */
@@ -100,7 +106,7 @@ header h1 { color: white; font-size: 2rem; }
 .form-field label {
   font-weight: bold;
   text-align: left;
-  margin-left: 20px;
+  margin-left: 0px;
   margin-right: 10px;
 }
 
@@ -144,29 +150,19 @@ header h1 { color: white; font-size: 2rem; }
   width: 120px;
 }
 .editando {
-  background-color: #f0f8ff;
-  border: 2px solid #2196f3;
-  border-radius: 5px;
-  padding: 6px;
-  margin-bottom: 4px;
+  background-color: #ffe58f
 }
+
+
 .subtitulo {
-  width: 100vw; /* usa el 100% del viewport, no del contenedor */
+  width: 100%;
   background: #9dc9ca;
   color: #006d67;
   text-align: center;
   padding: 0.5rem 0;
   font-weight: bold;
   font-size: 1.2rem;
-  margin: 0; /* quita márgenes que lo empujan */
-}
-
-/* Contenedor global */
-.contenido-principal {
-  width: 100%;
-  max-width: 1500px; /* o el mismo valor que uses en form-container */
-  margin: 1rem auto;
-  padding: 0 1rem;
+  margin: 0 auto; /* centrar */
 }
 
 /* Sección lista de animales alineada a la izquierda */
@@ -183,11 +179,16 @@ header h1 { color: white; font-size: 2rem; }
 }
 
 /* TABLA DE ANIMALES REGISTRADOS */
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
 /* Tabla centrada */
 .tabla-animales {
   margin: 2rem auto;
   width: 95%;
-  max-width: 1100px;
   border-collapse: collapse;
   font-family: sans-serif;
   background-color: #fdfdf9;
