@@ -6,7 +6,7 @@ import {
   collection,
   getDocs,
   query,    
-  where   
+  where
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -20,16 +20,17 @@ const firebaseConfig = {
 };
 
 // 1) Inicializa Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // 2) Inicializa Firestore
 export const db = getFirestore(app);
 
-export async function codigoExisteEnFirebase(codigo) {
-        const q = query(collection(db, 'animales'), where('codigo', '==', codigo));
-        const snapshot = await getDocs(q);
-        return !snapshot.empty; // retorna true si ya existe
-    }
+export async function codigoExisteEnFirebase(uid, codigo) {
+    const colRef = collection(db, 'usuarios', uid, 'animales');
+    const q = query(colRef, where('codigo', '==', codigo));
+    const snapshot = await getDocs(q);
+    return !snapshot.empty;
+}
 
 // 3) Habilita persistencia offline en múltiples pestañas
 enableMultiTabIndexedDbPersistence(db)

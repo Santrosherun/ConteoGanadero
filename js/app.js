@@ -1,3 +1,44 @@
+import { observarUsuario, login, cerrarSesion } from './auth.js';
+
+let usuarioActivo = null;
+
+observarUsuario((usuario) => {
+    const content = document.getElementById('content');
+    const loginForm = document.getElementById('loginForm');
+
+    if (usuario) {
+        usuarioActivo = usuario;
+        console.log("Usuario activo:", usuario.email);
+
+        // Mostrar contenido
+        content.style.display = 'block';
+
+        // Oculta login si existe
+        if (loginForm) loginForm.remove();
+        router(); // carga vistas
+    } else {
+        usuarioActivo = null;
+
+        // Ocultar contenido
+        content.style.display = 'none';
+
+        if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            try {
+               await login(email, password);
+            } catch (err) {
+                alert("Error al iniciar sesión: " + err.message);
+            }
+        });
+    } else {
+        content.innerHTML = `<p>No se encontró el formulario de login.</p>`;
+    }
+  }
+});
+
 //MANEJO DE VISTAS
 const routes = {
     '': '/views/main.html',
@@ -20,9 +61,14 @@ async function loadView(viewUrl) {
 
         // Re-inicializa lo necesario según la vista cargada
         if (viewUrl.includes('agregar.html')){
-            inicializarAgregar();
+            try {
+                inicializarAgregar();
+            } catch (err) {
+                console.error("Error en inicializarAgregar:", err);
+            }
         }
-        
+
+        // AGREGAR TRY CATCH
         if (viewUrl.includes('modificar.html')){
             inicializarModificar();
         }
@@ -30,6 +76,12 @@ async function loadView(viewUrl) {
         if (viewUrl.includes('mostrar-todos.html')){
             mostrarTodos();
         }
+
+        
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            cerrarSesion();
+            alert("sesion cerrada con exito")
+        });
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
@@ -43,7 +95,7 @@ function router() {
 }
 
 window.addEventListener('hashchange', router);
-window.addEventListener('load', router);
+// window.addEventListener('load', router);
 
 //LÓGICA DE LA APLICACIÓN
 import {
@@ -64,7 +116,7 @@ function inicializarAgregar() {
     let animalesGlobal = [];
 
     // Al inicio de inicializarAgregar(), antes de renderAnimales:
-    obtenerAnimales((lista) => {
+    obtenerAnimales(usuarioActivo.uid, (lista) => {
         // listaAnimales viene de Firestore: [{ id, codigo, tipo, fechaNacimiento, ... }, …]
         animalesGlobal = lista;
         renderAnimales(lista);
@@ -109,7 +161,7 @@ function inicializarAgregar() {
                 const id = e.target.dataset.id;
                 const confirmacion = confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción no se puede deshacer.');
                 if (confirmacion) {
-                    await eliminarAnimal(id);
+                    await eliminarAnimal(usuarioActivo.uid, id);
                     mostrarNotificacion('Animal eliminado correctamente.');
                 }
                 })
@@ -181,12 +233,12 @@ function inicializarAgregar() {
         
     
         try {
-            const existeCodigo = await codigoExisteEnFirebase(codigo);
+            const existeCodigo = await codigoExisteEnFirebase(usuarioActivo.uid, codigo);
             if (existeCodigo) {
                 alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
                 return;
             }
-            await agregarAnimal(nuevoAnimal);
+            await agregarAnimal(usuarioActivo.uid, nuevoAnimal);
             mostrarNotificacion('Animal agregado correctamente.');
             } catch (err) {
                 alert('Ocurrió un error guardando el animal.');
@@ -213,7 +265,7 @@ function mostrarTodos() {
     let animalesGlobal = [];
 
     // Cargar desde base de datos
-    obtenerAnimales((listaDB) => {
+    obtenerAnimales(usuarioActivo.uid, (listaDB) => {
         animalesGlobal = listaDB;
         renderAnimales(animalesGlobal, 'todos');
     });
@@ -316,7 +368,7 @@ function inicializarModificar() {
     document.getElementById('contenedor-tipo').style.display = 'none'
     document.getElementById('contenedor-fechaN').style.display = 'none'
 
-    obtenerAnimales((lista) => {
+    obtenerAnimales(usuarioActivo.uid, (lista) => {
         animalesGlobal = lista;
     });
 
@@ -452,16 +504,16 @@ function inicializarModificar() {
 
         try {
             if (editandoId !== null) {
-                await actualizarAnimal(editandoId, nuevoAnimal);
+                await actualizarAnimal(usuarioActivo.uid, editandoId, nuevoAnimal);
                 mostrarNotificacion('Animal actualizado correctamente.');
                 editandoId = null;
             } else {
-                const existeCodigo = await codigoExisteEnFirebase(codigo);
+                const existeCodigo = await codigoExisteEnFirebase(usuarioActivo.uid, codigo);
                 if (existeCodigo) {
                     alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
                     return;
                 }
-                await agregarAnimal(nuevoAnimal);
+                await agregarAnimal(usuarioActivo.uid, nuevoAnimal);
                 mostrarNotificacion('Animal agregado correctamente.');
             }
         } catch (err) {
