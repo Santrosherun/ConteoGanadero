@@ -15,42 +15,87 @@ header {
   background: #006d67;
   width: 100%;
   text-align: center;
-  padding: 1rem 0;
+  padding: 2rem 0;
   position: relative;
 }
-header h1 { color: white; font-size: 2rem; }
+/*header h1 { color: white; font-size: 2rem; }*/
+.titulo-header {
+  color: white;
+  font-size: 2rem;
+  white-space: nowrap;
+}
+.salto-sm {
+  display: inline;
+}
+
+/* En pantallas pequeñas, forzar salto */
+@media (max-width: 500px) {
+  .salto-sm {
+    display: block;
+  }
+
+  .titulo-header {
+    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+  }
+}
 
 /* Menú principal: grid */
+/* Contenedor del menú principal */
 #main-menu {
   display: grid;
-  grid-template-columns: repeat(2, 200px);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-/* Botones-enlace estilo “píldora” */
+/* Estilo base de los botones */
 .menu-button {
-  display: inline-block;
-  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  background: #9dc9ca;
-  color: #006d67;
-  padding: 0.75rem 1.5rem;
+  background: #b1dadb;
+  color: #004d4d;
+  padding: 1.2rem 2rem;
   border-radius: 1.5rem;
-  font-size: 1.1rem;
-  transition: transform 0.1s, box-shadow 0.2s;
-  margin: 0.5rem 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .menu-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #88bcbc;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive extra en pantallas pequeñas */
+@media (max-width: 600px) {
+  .menu-button {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  #main-menu {
+    grid-template-columns: 1fr; /* Una columna por fila */
+    gap: 1rem;
+  }
 }
 
 /*BOTÓN MENÚ PRINCIPAL*/
 
 .menu-principal-btn {
   position: absolute;
-  top: 1rem;
+  top: 1.8rem;
   right: 1rem;
   background: #9dc9ca;
   color: #006d67;
@@ -238,6 +283,7 @@ header h1 { color: white; font-size: 2rem; }
   padding: 0.5rem 1rem;
   cursor: pointer;
   width: 120px;
+  margin-bottom: 20px;
 }
 .editando {
   background-color: #ffe58f
@@ -278,6 +324,7 @@ header h1 { color: white; font-size: 2rem; }
 /* Tabla centrada */
 .tabla-animales {
   margin: 0 auto;
+  margin-bottom: 1rem;
   width: 95%;
   border-collapse: collapse;
   font-family: sans-serif;

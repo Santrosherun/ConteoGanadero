@@ -1,0 +1,63 @@
+<h2 class="subtitulo">Eliminar animales</h2>
+
+<main class="contenido-principal">
+  <!-- Sección de eliminación -->
+  <section class="form-container">
+    <form id="form-eliminar">
+      <div class="form-grid">
+        <div class="form-columns">
+          <div class="form-left">
+            <div class="form-field">
+              <label for="codigoEliminar">ID:</label>
+              <input
+                type="text"
+                id="codigoEliminar"
+                placeholder="Ingresa Código a eliminar"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button type="submit" id="btn-eliminar">Eliminar</button>
+        </div>
+    </form>
+    <div id="notificacion" class="notificacion oculto"></div>
+  </section>
+
+  <!-- Separador -->
+  <h2 class="subtitulo">Buscar animales</h2>
+
+  <!-- Sección de búsqueda -->
+  <section class="form-container">
+    <form id="form-buscar">
+      <div class="form-grid">
+        <div class="form-columns">
+          <div class="form-left">
+            <div class="form-field">
+              <label for="codigoBuscar">ID:</label>
+              <input
+                type="text"
+                id="codigoBuscar"
+                placeholder="Ingresa Código a buscar"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button type="button" id="btn-buscar">Buscar</button>
+        </div>
+    </form>
+  </section>
+
+  <!-- Resultado de búsqueda -->
+  <div class="lista-animales" id="resultado-buscar" style="display:none;">
+    <div class="tabla-responsive">
+        <table class="tabla-animales">
+            <thead id="tabla-eliminar-head"></thead>
+            <tbody id="tabla-eliminar-body"></tbody>
+        </table>
+    </div>
+  </div>
+</main>
