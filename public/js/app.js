@@ -9,10 +9,8 @@ observarUsuario((usuario) => {
     if (usuario) {
         usuarioActivo = usuario;
         console.log("Usuario activo:", usuario.email);
-
         // Mostrar contenido
         content.style.display = 'block';
-
         // Oculta login si existe
         if (loginForm) loginForm.remove();
         router(); // carga vistas
@@ -87,7 +85,7 @@ async function loadView(viewUrl) {
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             cerrarSesion();
             alert("sesion cerrada con exito")
-        });
+        }), {once: true};
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
