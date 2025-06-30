@@ -2,14 +2,16 @@
 //Rutas cambiadas
 const CACHE_NAME = 'pwa-ganado-v1';
 const ASSETS = [                   
-  'index.html',
-  'js/firebase-config.js',
-  'js/db.js',
-  'js/app.js',
-  'js/utils.js',
-  'css/style.css',     
-  'views/agregar.html',
-  'views/main.html',
+  '/public/index.html',
+  '/public/js/firebase-config.js',
+  '/public/js/db.js',
+  '/public/js/app.js',
+  '/public/js/utils.js',
+  '/public/css/style.css',     
+  '/public/views/agregar.html',
+  '/public/views/main.html',
+  '/public/icons/icon-192.png',
+  '/public/icons/icon-512.png'
   // añade aquí todos los recursos estáticos que uses
 ];
 
