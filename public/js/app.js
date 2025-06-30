@@ -76,7 +76,11 @@ async function loadView(viewUrl) {
             mostrarTodos();
         }
         if (viewUrl.includes('eliminar.html')) {
-            inicializarEliminar();
+            try {
+                inicializarEliminar();
+            } catch (err) {
+                console.error("Error inicializarEliminar", err)
+            }
         }
 
         
@@ -548,7 +552,7 @@ export function inicializarEliminar() {
   let datosListos    = false;
 
   // ————— Suscribir snapshot —————
-  const unsubscribe = obtenerAnimales(lista => {
+  const unsubscribe = obtenerAnimales(usuarioActivo.uid, lista => {
     animalesGlobal = lista;
     datosListos = true;
   });
@@ -578,7 +582,7 @@ export function inicializarEliminar() {
     }
 
     try {
-      await eliminarAnimal(animal.id);
+      await eliminarAnimal(usuarioActivo.uid, id);
       mostrarNotificacion('Animal eliminado correctamente.');
       formEliminar.reset();
     } catch (err) {
