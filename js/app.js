@@ -4,8 +4,7 @@ const routes = {
     '#/agregar': '/views/agregar.html',
     '#/modificar': '/views/modificar.html',
     '#/mostrar-todos': '/views/mostrar-todos.html',
-    '#/mostrar-vacas': '/views/mostrar-vacas.html',
-    //   '#/eliminar': '/views/eliminar.html',
+    '#/eliminar': '/views/eliminar.html',
     //   '#/mostrar-toros': '/views/mostrar-toros.html',
     //   '#/mostrar-terneros': '/views/mostrar-terneros.html',
     //   '#/informes': '/views/informes.html',
@@ -29,6 +28,9 @@ async function loadView(viewUrl) {
         
         if (viewUrl.includes('mostrar-todos.html')){
             mostrarTodos();
+        }
+        if (viewUrl.includes('eliminar.html')) {
+            inicializarEliminar();
         }
 
     } catch (err) {
@@ -478,3 +480,121 @@ function inicializarModificar() {
 
     inicializarFormDinamico();
 }
+
+export function inicializarEliminar() {
+  // ————— Elementos del DOM —————
+  const formEliminar = document.getElementById('form-eliminar');
+  const inputEliminar = document.getElementById('codigoEliminar');
+  const inputBuscar   = document.getElementById('codigoBuscar');
+  const btnBuscar     = document.getElementById('btn-buscar');
+  const subBuscar     = document.querySelectorAll('h2.subtitulo')[1]; // el segundo subtitulo
+  const divResultado  = document.getElementById('resultado-buscar');
+  const headResultado = document.getElementById('tabla-eliminar-head');
+  const bodyResultado = document.getElementById('tabla-eliminar-body');
+
+  let animalesGlobal = [];
+  let datosListos    = false;
+
+  // ————— Suscribir snapshot —————
+  const unsubscribe = obtenerAnimales(lista => {
+    animalesGlobal = lista;
+    datosListos = true;
+  });
+
+  // ————— Lógica de ELIMINAR —————
+  formEliminar.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!datosListos) {
+      alert('Los datos aún se están cargando, espera un momento.');
+      return;
+    }
+
+    const codigo = inputEliminar.value.trim();
+    if (!codigo) {
+      alert('Por favor ingresa un código para eliminar.');
+      return;
+    }
+
+    const animal = animalesGlobal.find(a => a.codigo === codigo);
+    if (!animal) {
+      alert(`No se encontró ningún animal con código "${codigo}".`);
+      return;
+    }
+
+    if (!confirm(`Vas a eliminar el animal con Código "${codigo}".\n¿Estás seguro? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      await eliminarAnimal(animal.id);
+      mostrarNotificacion('Animal eliminado correctamente.');
+      formEliminar.reset();
+    } catch (err) {
+      console.error(err);
+      mostrarNotificacion('Error eliminando el animal.');
+    }
+  });
+
+  // ————— Lógica de BUSCAR —————
+  btnBuscar.addEventListener('click', () => {
+    if (!datosListos) {
+      alert('Los datos aún se están cargando, por favor espera un momento.');
+      return;
+    }
+
+    const codigo = inputBuscar.value.trim();
+    if (!codigo) {
+      alert('Por favor ingresa un código para buscar.');
+      return;
+    }
+
+    const animal = animalesGlobal.find(a => a.codigo === codigo);
+    if (!animal) {
+      alert(`No existe animal con código "${codigo}".`);
+      return;
+    }
+
+    // Mostrar subtitulo y tabla
+    subBuscar.style.display = 'block';
+    divResultado.style.display = 'block';
+
+    // Encabezados
+    headResultado.innerHTML = `
+      <tr>
+        <th>Código</th>
+        <th>Tipo</th>
+        <th>Edad</th>
+        <th>N° Partos</th>
+        <th>Fechas de Partos</th>
+        <th>Tiempo Amamantado</th>
+      </tr>
+    `;
+
+    // Fila con datos
+    const edad      = formatearEdad(animal.fechaNacimiento);
+    const nPartos   = animal.tipo === 'hembra' ? (animal.numeroDePartos ?? 'N/A') : 'N/A';
+    const fechas    = (animal.tipo === 'hembra' && animal.intervaloParto)
+      ? animal.intervaloParto.map(f => `<div>${f}</div>`).join('')
+      : 'N/A';
+    const tiempoAma = animal.esTernero ? `${animal.tiempoAmamantado} meses` : 'N/A';
+
+    bodyResultado.innerHTML = `
+      <tr>
+        <td>${animal.codigo}</td>
+        <td>${animal.tipo}</td>
+        <td>${edad}</td>
+        <td>${nPartos}</td>
+        <td class="datos-repro">${fechas}</td>
+        <td class="datos-repro">${tiempoAma}</td>
+      </tr>
+    `;
+  });
+
+  // ————— Limpiar suscripción al salir —————
+  window.addEventListener('hashchange', () => {
+    if (!window.location.hash.includes('eliminar')) {
+      unsubscribe();
+    }
+  });
+}
+
