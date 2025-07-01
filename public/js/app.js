@@ -81,13 +81,16 @@ async function loadView(viewUrl) {
             }
         }
         
-        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+        logoutBtn.onclick = () => {
             cerrarSesion();
-            alert("sesion cerrada con exito")
+            alert("Sesión cerrada con éxito");
             setTimeout(() => {
             location.reload();
             }, 500);
-        }), {once: true}; 
+        };
+        } 
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
@@ -146,7 +149,9 @@ function inicializarAgregar() {
             tr.innerHTML = `
                 <td>${animal.codigo}</td>
                 <td>${animal.tipo}</td>
-                <td>${formatearEdad(animal.fechaNacimiento)}</td>
+                <td title="Fecha Nacido: ${animal.fechaNacimiento}">
+                    ${formatearEdad(animal.fechaNacimiento)}
+                </td>
                 <td>${numeroDePartos}</td>
                 <td class="datos-repro">${fechasParto}</td>
                 <td class="datos-repro">${tiempoAmamantado}</td>
@@ -210,6 +215,15 @@ function inicializarAgregar() {
                 const fechaParto = new Date(intervaloParto[i]);
                 if (fechaParto < fechaNac) {
                     alert(`El parto ${i + 1} no puede ser anterior a la fecha de nacimiento.`);
+                    return;
+                }
+            }
+
+            const hoy = new Date();
+            for (let i = 0; i < intervaloParto.length; i++) {
+                const fechaParto = new Date(intervaloParto[i]);
+                if (fechaParto > hoy) {
+                    alert(`El parto ${i + 1} no puede ser una fecha futura.`);
                     return;
                 }
             }
@@ -481,6 +495,15 @@ function inicializarModificar() {
                 const fechaParto = new Date(intervaloParto[i]);
                 if (fechaParto < fechaNac) {
                     alert(`El parto ${i + 1} no puede ser anterior a la fecha de nacimiento.`);
+                    return;
+                }
+            }
+
+            const hoy = new Date();
+            for (let i = 0; i < intervaloParto.length; i++) {
+                const fechaParto = new Date(intervaloParto[i]);
+                if (fechaParto > hoy) {
+                    alert(`El parto ${i + 1} no puede ser una fecha futura.`);
                     return;
                 }
             }

@@ -12,21 +12,22 @@ export function formatearEdad(fechaNacimientoStr) {
     const hoy = new Date();
 
     const diferenciaMs = hoy - fechaNac;
-    const dias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
-    const semanas = Math.floor(dias / 7);
-    const meses = Math.floor(dias / 30.44); // promedio de días en un mes
-    const años = Math.floor(meses / 12);
-    const mesesRestantes = meses % 12;
+    if (diferenciaMs < 0) return "fecha en el futuro";
 
-    if (dias < 1) return "menos de un día";
-    if (dias === 1) return "1 día";
-    if (dias < 7) return `${dias} días`;
-    if (semanas === 1) return "1 semana";
-    if (meses < 1) return `${semanas} semanas`;
-    if (meses === 1) return "1 mes";
-    if (años < 1) return `${meses} meses`;
-    if (mesesRestantes === 0) return `${años} año${años === 1 ? '' : 's'}`;
-    return `${años} año${años === 1 ? '' : 's'} y ${mesesRestantes} mes${mesesRestantes === 1 ? '' : 'es'}`;
+    const diasTotales = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+    const años = Math.floor(diasTotales / 365.25);
+    const diasRestantesTrasAños = diasTotales - Math.floor(años * 365.25);
+    const meses = Math.floor(diasRestantesTrasAños / 30.44);
+    const diasRestantes = Math.floor(diasRestantesTrasAños - meses * 30.44);
+
+    let resultado = [];
+
+    if (años > 0) resultado.push(`${años} año${años === 1 ? '' : 's'}`);
+    if (meses > 0) resultado.push(`${meses} mes${meses === 1 ? '' : 'es'}`);
+    if (diasRestantes > 0 || resultado.length === 0) {
+        resultado.push(`${diasRestantes} día${diasRestantes === 1 ? '' : 's'}`);
+    }
+    return resultado.join(' y ');
 }
 
 export function inicializarFormDinamico() {
