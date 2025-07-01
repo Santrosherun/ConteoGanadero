@@ -80,7 +80,6 @@ async function loadView(viewUrl) {
                 console.error("Error inicializarEliminar", err)
             }
         }
-
         
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             cerrarSesion();
@@ -88,7 +87,7 @@ async function loadView(viewUrl) {
             setTimeout(() => {
             location.reload();
             }, 500);
-        }), {once: true};
+        }), {once: true}; 
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
