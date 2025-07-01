@@ -1,5 +1,31 @@
 /* Reset + tipografía */
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* MEJORAS UI (SANTIAGO) */
+* { -webkit-tap-highlight-color: transparent; } /* Sirve para quitar resaltos innecesarios en movil */
+
+button{
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover,
+button:focus-visible,
+button:active {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 500px) {
+  button:active {
+    transform: scale(0.97);
+  }
+}
+
+
+/* FIN MEJORAS UI (SANTIAGO) */
+
 body {
   font-family: Arial, sans-serif;
   background: #f1f0ea;
