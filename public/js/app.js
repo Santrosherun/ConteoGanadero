@@ -87,7 +87,10 @@ async function loadView(viewUrl) {
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             cerrarSesion();
             alert("sesion cerrada con exito")
-        });
+            setTimeout(() => {
+            location.reload();
+            }, 500);
+        }), {once: true};
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
@@ -117,7 +120,6 @@ import { codigoExisteEnFirebase } from './firebase-config.js'
 
 function inicializarAgregar() {
     const form = document.getElementById('form-animal');
-    const btnCancelar = document.getElementById('btn-cancelar');
     const lista = document.getElementById('lista-animales');
     let animalesGlobal = [];
 
@@ -255,7 +257,6 @@ function inicializarAgregar() {
         form.reset();
         document.getElementById('tipo').dispatchEvent(new Event('change'));
         document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
-        cancelarEdicion(form, btnCancelar);
         inicializarFormDinamico();
         // renderAnimales();
     });
