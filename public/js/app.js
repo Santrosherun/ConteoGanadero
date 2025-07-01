@@ -9,10 +9,8 @@ observarUsuario((usuario) => {
     if (usuario) {
         usuarioActivo = usuario;
         console.log("Usuario activo:", usuario.email);
-
         // Mostrar contenido
         content.style.display = 'block';
-
         // Oculta login si existe
         if (loginForm) loginForm.remove();
         router(); // carga vistas
