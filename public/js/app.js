@@ -580,12 +580,12 @@ export function inicializarEliminar() {
     }
 
     try {
-      await eliminarAnimal(usuarioActivo.uid, id);
+      await eliminarAnimal(usuarioActivo.uid, animal.id); //linea corregida @allison
       mostrarNotificacion('Animal eliminado correctamente.');
       formEliminar.reset();
     } catch (err) {
       console.error(err);
-      mostrarNotificacion('Error eliminando el animal.');
+      mostrarNotificacion('Error eliminando el animal.', err);
     }
   });
 
