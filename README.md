@@ -100,6 +100,30 @@ public/
 
 ## 🚀 Cómo usar
 
+### 📱 Android
+
+1. Abre la aplicación desde Chrome.
+
+2. Aparecerá automáticamente un banner o botón “Agregar a pantalla de inicio”.
+
+3. Si no aparece, abre el menú (⋮) del navegador y selecciona “Instalar app”.
+
+4. La aplicación se instalará como una app nativa con ícono y pantalla completa.
+
+### 🍎 iOS (iPhone/iPad)
+
+<u> Safari es el único navegador que permite instalar PWAs en iOS. </u>
+
+1. Abre la app desde Safari.
+
+2. Toca el botón Compartir (cuadro con flecha hacia arriba).
+
+3. Selecciona “Agregar a pantalla de inicio”.
+
+4. Cambia el nombre si deseas y pulsa “Agregar”.
+
+5. Se instalará como una app independiente en tu pantalla de inicio.
+
 ## 🧠 Créditos
 
 👥 DESARROLLADO POR: ALLISON RUIZ Y SANTIAGO DIAZ
