@@ -93,6 +93,7 @@ export function inicializarFormDinamico() {
                 input.style.marginBottom = '5px';
                 input.style.marginTop = '5px';
                 input.required = true;
+                input.max = new Date().toISOString().split('T')[0];
 
                 // Agregar label e input al contenedor
                 formField.appendChild(label);

@@ -2,9 +2,14 @@ import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https
 import { db }               from "./firebase-config.js";
 
 export async function agregarAnimal(uid, animal) {
-  const colRef = collection(db, "usuarios", uid, "animales");
-  const docRef = await addDoc(colRef, animal);
-  console.log("Animal agregado con ID:", docRef.id);
+  try {
+    const colRef = collection(db, "usuarios", uid, "animales");
+    const docRef = await addDoc(colRef, animal);
+    console.log("Animal agregado con ID:", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error al agregar animal:", error);
+  }
 }
 
 export function obtenerAnimales(uid, callback) {
@@ -17,13 +22,21 @@ export function obtenerAnimales(uid, callback) {
 }
 
 export async function actualizarAnimal(uid, id, cambios) {
-  const docRef = doc(db, "usuarios", uid, "animales", id);
-  await updateDoc(docRef, cambios);
-  console.log("Animal actualizado:", id);
+  try {
+    const docRef = doc(db, "usuarios", uid, "animales", id);
+    await updateDoc(docRef, cambios);
+    console.log("Animal actualizado:", id);
+  } catch (error) {
+    console.error("Error al actualizar animal:", error);
+  }
 }
 
 export async function eliminarAnimal(uid, id) {
-  const docRef = doc(db, "usuarios", uid, "animales", id);
-  await deleteDoc(docRef);
-  console.log("Animal eliminado:", id);
+  try {
+    const docRef = doc(db, "usuarios", uid, "animales", id);
+    await deleteDoc(docRef);
+    console.log("Animal eliminado:", id);
+  } catch (error) {
+    console.error("Error al eliminar animal:", error);
+  }
 }

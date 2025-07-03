@@ -16,22 +16,32 @@ const auth = getAuth(app);
 // }
 
 // Iniciar sesión
-export function login(email, password) {
-  return signInWithEmailAndPassword(auth, email, password);
+export async function login(email, password) {
+    try {
+        const credenciales = await signInWithEmailAndPassword(auth, email, password);
+        console.log("Sesión iniciada:", credenciales.user.uid);
+        return credenciales.user;
+    } catch (error) {
+        console.error("Error al iniciar sesión:", error);
+    }
 }
 
 // Cerrar sesión
-export function cerrarSesion() {
-  signOut(auth)
-    .then(() => {
-      console.log("Sesión cerrada");
-    })
-    .catch((error) => {
-      console.error("Error cerrando sesión:", error);
-    });
+export async function cerrarSesion() {
+    try {
+        await signOut(auth);
+        console.log("Sesión cerrada");
+    } catch (error) {
+        console.error("Error cerrando sesión:", error);
+    }
 }
 
 // Escuchar cambios de sesión
-export function observarUsuario(callback) {
-  onAuthStateChanged(auth, callback);
+export function observarUsuario(callback, onError = console.error) {
+    try {
+        onAuthStateChanged(auth, callback, onError);
+    } catch (error) {
+        console.error("Error observando sesión:", error);
+        onError("No se pudo observar el estado de sesión.");
+    }
 }
