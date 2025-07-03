@@ -6,6 +6,11 @@ observarUsuario((usuario) => {
     const content = document.getElementById('content');
     const loginForm = document.getElementById('loginForm');
 
+    if (!content) {
+        console.error("Elemento 'content' no encontrado en el DOM.");
+        return;
+    }
+
     if (usuario) {
         usuarioActivo = usuario;
         console.log("Usuario activo:", usuario.email);
@@ -13,7 +18,13 @@ observarUsuario((usuario) => {
         content.style.display = 'block';
         // Oculta login si existe
         if (loginForm) loginForm.remove();
-        router(); // carga vistas
+        
+        try {
+            router(); // carga vistas
+        } catch (error) {
+            console.error("Error cargando vistas con router():", error);
+        }
+
     } else {
         usuarioActivo = null;
 
@@ -30,7 +41,7 @@ observarUsuario((usuario) => {
             } catch (err) {
                 alert("Error al iniciar sesión: " + err.message);
             }
-        });
+        }, { once: true });
     } else {
         content.innerHTML = `<p>No se encontró el formulario de login.</p>`;
     }
@@ -65,14 +76,22 @@ async function loadView(viewUrl) {
             }
         }
 
-        // AGREGAR TRY CATCH
-        if (viewUrl.includes('modificar.html')){
-            inicializarModificar();
+        if (viewUrl.includes('modificar.html')) {
+            try {
+                inicializarModificar();
+            } catch (err) {
+                console.error("Error en inicializarModificar:", err);
+            }
         }
         
-        if (viewUrl.includes('mostrar-todos.html')){
-            mostrarTodos();
+        if (viewUrl.includes('mostrar-todos.html')) {
+            try {
+                mostrarTodos();
+            } catch (err) {
+                console.error("Error en mostrarTodos:", err);
+            }
         }
+
         if (viewUrl.includes('eliminar.html')) {
             try {
                 inicializarEliminar();
@@ -123,6 +142,8 @@ function inicializarAgregar() {
     const lista = document.getElementById('lista-animales');
     let animalesGlobal = [];
 
+    document.getElementById('fechaNacimiento').max = new Date().toISOString().split('T')[0];
+
     // Al inicio de inicializarAgregar(), antes de renderAnimales:
     obtenerAnimales(usuarioActivo.uid, (lista) => {
         // listaAnimales viene de Firestore: [{ id, codigo, tipo, fechaNacimiento, ... }, …]
@@ -134,33 +155,45 @@ function inicializarAgregar() {
 
         lista.innerHTML = '';
 
-        animales.forEach(animal => {
-            const tr = document.createElement('tr');
+        try {
+            animales.forEach(animal => {
 
-            const numeroDePartos = animal.tipo === 'hembra' ? animal.numeroDePartos ?? 'N/A' : 'N/A';
-            const fechasParto = animal.tipo === 'hembra' && animal.intervaloParto
-                ? animal.intervaloParto.map(f => `<div>${f}</div>`).join('')
-                : 'N/A';
+                try {
+                    const tr = document.createElement('tr');
+                    
+                    const numeroDePartos = animal.tipo === 'hembra' ? animal.numeroDePartos ?? 'N/A' : 'N/A';
+                    const fechasParto = animal.tipo === 'hembra' && animal.intervaloParto
+                        ? animal.intervaloParto.map(f => `<div>${f}</div>`).join('')
+                        : 'N/A';
+        
+                    const tiempoAmamantado = animal.esTernero
+                        ? `${animal.tiempoAmamantado} meses`
+                        : 'N/A';
+        
+                    tr.innerHTML = `
+                        <td>${animal.codigo}</td>
+                        <td>${animal.tipo}</td>
+                        <td title="Fecha Nacido: ${animal.fechaNacimiento}">
+                            ${formatearEdad(animal.fechaNacimiento)}
+                        </td>
+                        <td>${numeroDePartos}</td>
+                        <td class="datos-repro">${fechasParto}</td>
+                        <td class="datos-repro">${tiempoAmamantado}</td>
+                        <td>
+                        <button data-id="${animal.id}" class="eliminar">Eliminar</button>
+                        </td>
+                    `;
+                    lista.appendChild(tr);
+                } catch (err) {
+                    console.error("Error al renderizar un animal:", err, animal);
+                }
 
-            const tiempoAmamantado = animal.esTernero
-                ? `${animal.tiempoAmamantado} meses`
-                : 'N/A';
+            });       
+        } catch (err) {
+            console.error("Error en renderAnimales:", err);
+        }
 
-            tr.innerHTML = `
-                <td>${animal.codigo}</td>
-                <td>${animal.tipo}</td>
-                <td title="Fecha Nacido: ${animal.fechaNacimiento}">
-                    ${formatearEdad(animal.fechaNacimiento)}
-                </td>
-                <td>${numeroDePartos}</td>
-                <td class="datos-repro">${fechasParto}</td>
-                <td class="datos-repro">${tiempoAmamantado}</td>
-                <td>
-                <button data-id="${animal.id}" class="eliminar">Eliminar</button>
-                </td>
-            `;
-            lista.appendChild(tr);
-        });
+
 
         // Asignar eventos a los botones
         //ELIMINAR
@@ -280,13 +313,25 @@ function mostrarTodos() {
     const lista = document.getElementById('lista-animales');
     const head = document.getElementById('tabla-head');
     const selectFiltro = document.getElementById('filtro-tipo');
+
+    if (!lista || !head || !selectFiltro) {
+        console.error("Elementos necesarios para mostrar la tabla no encontrados.");
+        return;
+    }
+
     let animalesGlobal = [];
 
     // Cargar desde base de datos
-    obtenerAnimales(usuarioActivo.uid, (listaDB) => {
-        animalesGlobal = listaDB;
-        renderAnimales(animalesGlobal, 'todos');
-    });
+
+    try {
+        obtenerAnimales(usuarioActivo.uid, (listaDB) => {
+            animalesGlobal = listaDB;
+            renderAnimales(animalesGlobal, 'todos');
+        });
+    } catch (err) {
+        console.error("Error al escuchar datos de animales:", err);
+    }
+
 
     // Evento para filtrar
     selectFiltro.addEventListener('change', (e) => {
@@ -383,12 +428,22 @@ function inicializarModificar() {
     const btnCancelar = document.getElementById('btn-cancelar');
     let editandoId = null;
     let animalesGlobal = [];
-    document.getElementById('contenedor-tipo').style.display = 'none'
-    document.getElementById('contenedor-fechaN').style.display = 'none'
 
-    obtenerAnimales(usuarioActivo.uid, (lista) => {
+    try {
+        document.getElementById('contenedor-tipo').style.display = 'none'
+        document.getElementById('contenedor-fechaN').style.display = 'none'
+        document.getElementById('fechaNacimiento').max = new Date().toISOString().split('T')[0];        
+    } catch (error) {
+        console.error("Error ocultando campos:", err);
+    }
+
+    try {
+        obtenerAnimales(usuarioActivo.uid, (lista) => {
         animalesGlobal = lista;
     });
+    } catch (error) {
+        console.error("Error al obtener animales:", error);
+    }
 
     btnBuscar.textContent = 'Buscar';
 
@@ -410,52 +465,64 @@ function inicializarModificar() {
                 return;
             }
 
-            document.getElementById('contenedor-tipo').style.display = 'flex'
-            document.getElementById('contenedor-fechaN').style.display = 'flex'
-
-            btnCancelar.style.display = 'inline-block';
-
-            document.getElementById('codigo').value = animal.codigo;
-            document.getElementById('tipo').value = animal.tipo;
-            document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
-
-            document.getElementById('tipo').dispatchEvent(new Event('change'));
-            document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
-
-            if (animal.esTernero) {
-                document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
-            } else if (animal.tipo === 'hembra') {
-                document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
-
-                const contenedor = document.getElementById('contenedor-intervalos');
-                contenedor.innerHTML = '';
-
-                for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
-                    const formField = document.createElement('div');
-                    formField.className = 'form-field';
-
-                    const label = document.createElement('label');
-                    label.textContent = `Parto ${i + 1}:`;
-                    label.setAttribute('for', `parto-${i + 1}`);
-
-                    const input = document.createElement('input');
-                    input.type = 'date';
-                    input.className = 'intervalo';
-                    input.id = `parto-${i + 1}`;
-                    input.name = `parto-${i + 1}`;
-                    input.value = animal.intervaloParto?.[i] || '';
-                    input.required = true;
-
-                    formField.appendChild(label);
-                    formField.appendChild(input);
-                    contenedor.appendChild(formField);
+            try { 
+                document.getElementById('contenedor-tipo').style.display = 'flex'
+                document.getElementById('contenedor-fechaN').style.display = 'flex'
+    
+                btnCancelar.style.display = 'inline-block';
+    
+                document.getElementById('codigo').value = animal.codigo;
+                document.getElementById('tipo').value = animal.tipo;
+                document.getElementById('fechaNacimiento').value = animal.fechaNacimiento;
+    
+                document.getElementById('tipo').dispatchEvent(new Event('change'));
+                document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+    
+                if (animal.esTernero) {
+                    document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
+                } else if (animal.tipo === 'hembra') {
+                    document.getElementById('numeroPartos').value = animal.numeroDePartos || 0;
+    
+                    const contenedor = document.getElementById('contenedor-intervalos');
+                    contenedor.innerHTML = '';
+    
+                    for (let i = 0; i < (animal.numeroDePartos || 0); i++) {
+                        const formField = document.createElement('div');
+                        formField.className = 'form-field';
+    
+                        const label = document.createElement('label');
+                        label.textContent = `Parto ${i + 1}:`;
+                        label.setAttribute('for', `parto-${i + 1}`);
+    
+                        const input = document.createElement('input');
+                        input.type = 'date';
+                        input.className = 'intervalo';
+                        input.id = `parto-${i + 1}`;
+                        input.name = `parto-${i + 1}`;
+                        input.value = animal.intervaloParto?.[i] || '';
+                        input.required = true;
+                        input.max = new Date().toISOString().split('T')[0];
+    
+                        formField.appendChild(label);
+                        formField.appendChild(input);
+                        contenedor.appendChild(formField);
+                    }
                 }
+    
+                editandoId = animal.id;
+                btnBuscar.textContent = 'Actualizar';
+            } catch (err) {
+                console.error("Error al preparar el formulario de edición:", err);
             }
 
-            editandoId = animal.id;
-            btnBuscar.textContent = 'Actualizar';
         } else if (modo === 'Actualizar') {
-            form.dispatchEvent(new Event('submit'));
+
+            try {
+                form.dispatchEvent(new Event('submit'));
+            } catch (err) {
+                console.error("Error al preparar el formulario de edición:", err);
+            }
+
         }
     });
 
