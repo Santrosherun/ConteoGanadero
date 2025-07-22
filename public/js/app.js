@@ -1,6 +1,9 @@
 import { observarUsuario, login, cerrarSesion } from './auth.js';
+import { obtenerFincaActiva  } from './fincasService.js'
+import { mostrarFincaActiva } from './utils.js';
 
 let usuarioActivo = null;
+let fincaActivaId = null;
 
 observarUsuario((usuario) => {
     const content = document.getElementById('content');
@@ -13,7 +16,9 @@ observarUsuario((usuario) => {
 
     if (usuario) {
         usuarioActivo = usuario;
-        console.log("Usuario activo:", usuario.email);
+
+        fincaActivaId = obtenerFincaActiva();
+
         // Mostrar contenido
         content.style.display = 'block';
         // Oculta login si existe
@@ -55,6 +60,7 @@ const routes = {
     '#/modificar': '/views/modificar.html',
     '#/mostrar-todos': '/views/mostrar-todos.html',
     '#/eliminar': '/views/eliminar.html',
+    '#/fincas': '/views/fincasConfiguracion.html',
     //   '#/mostrar-toros': '/views/mostrar-toros.html',
     //   '#/mostrar-terneros': '/views/mostrar-terneros.html',
     //   '#/informes': '/views/informes.html',
@@ -99,6 +105,16 @@ async function loadView(viewUrl) {
                 console.error("Error inicializarEliminar", err)
             }
         }
+
+        if (viewUrl.includes('fincasConfiguracion.html')) {
+            try {
+                const moduloFincas = await import('./fincas.js');
+                moduloFincas.inicializarFincas();
+            } catch (err) {
+                console.error("Error cargando lógica de fincas:", err);
+            }
+        }
+
         
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
@@ -109,7 +125,9 @@ async function loadView(viewUrl) {
             location.reload();
             }, 500);
         };
-        } 
+        }
+        const nombreFincaActiva = localStorage.getItem('fincaActivaNombre');
+        mostrarFincaActiva(nombreFincaActiva);
 
     } catch (err) {
         document.getElementById('content').innerHTML = "<p>Error al cargar la vista.</p>";
@@ -141,11 +159,12 @@ function inicializarAgregar() {
     const form = document.getElementById('form-animal');
     const lista = document.getElementById('lista-animales');
     let animalesGlobal = [];
+    fincaActivaId = obtenerFincaActiva();
 
     document.getElementById('fechaNacimiento').max = new Date().toISOString().split('T')[0];
 
     // Al inicio de inicializarAgregar(), antes de renderAnimales:
-    obtenerAnimales(usuarioActivo.uid, (lista) => {
+    obtenerAnimales(usuarioActivo.uid, fincaActivaId, (lista) => {
         // listaAnimales viene de Firestore: [{ id, codigo, tipo, fechaNacimiento, ... }, …]
         animalesGlobal = lista;
         renderAnimales(lista);
@@ -204,7 +223,7 @@ function inicializarAgregar() {
                 const id = e.target.dataset.id;
                 const confirmacion = confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción no se puede deshacer.');
                 if (confirmacion) {
-                    await eliminarAnimal(usuarioActivo.uid, id);
+                    await eliminarAnimal(usuarioActivo.uid, fincaActivaId, id);
                     mostrarNotificacion('Animal eliminado correctamente.');
                 }
                 })
@@ -282,18 +301,17 @@ function inicializarAgregar() {
             numeroDePartos,
             intervaloParto
         };
-        
-    
+
         try {
-            const existeCodigo = await codigoExisteEnFirebase(usuarioActivo.uid, codigo);
+            const existeCodigo = await codigoExisteEnFirebase(usuarioActivo.uid, fincaActivaId, codigo);
             if (existeCodigo) {
                 alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
                 return;
-            }
-            await agregarAnimal(usuarioActivo.uid, nuevoAnimal);
+            }        
+            await agregarAnimal(usuarioActivo.uid, fincaActivaId, nuevoAnimal);
             mostrarNotificacion('Animal agregado correctamente.');
-            } catch (err) {
-                alert('Ocurrió un error guardando el animal.');
+        } catch (err) {
+            alert('Ocurrió un error guardando el animal: ' + err.message);
         }
     
     
@@ -324,7 +342,7 @@ function mostrarTodos() {
     // Cargar desde base de datos
 
     try {
-        obtenerAnimales(usuarioActivo.uid, (listaDB) => {
+        obtenerAnimales(usuarioActivo.uid, fincaActivaId,(listaDB) => {
             animalesGlobal = listaDB;
             renderAnimales(animalesGlobal, 'todos');
         });
@@ -438,7 +456,7 @@ function inicializarModificar() {
     }
 
     try {
-        obtenerAnimales(usuarioActivo.uid, (lista) => {
+        obtenerAnimales(usuarioActivo.uid, fincaActivaId,(lista) => {
         animalesGlobal = lista;
     });
     } catch (error) {
@@ -598,7 +616,7 @@ function inicializarModificar() {
 
         try {
             if (editandoId !== null) {
-                await actualizarAnimal(usuarioActivo.uid, editandoId, nuevoAnimal);
+                await actualizarAnimal(usuarioActivo.uid, fincaActivaId, editandoId, nuevoAnimal);
                 mostrarNotificacion('Animal actualizado correctamente.');
                 editandoId = null;
             } else {
@@ -607,7 +625,7 @@ function inicializarModificar() {
                     alert(`Ya existe un animal con el código "${codigo}". Usa uno diferente.`);
                     return;
                 }
-                await agregarAnimal(usuarioActivo.uid, nuevoAnimal);
+                await agregarAnimal(usuarioActivo.uid, fincaActivaId, nuevoAnimal);
                 mostrarNotificacion('Animal agregado correctamente.');
             }
         } catch (err) {
@@ -640,7 +658,7 @@ export function inicializarEliminar() {
   let datosListos    = false;
 
   // ————— Suscribir snapshot —————
-  const unsubscribe = obtenerAnimales(usuarioActivo.uid, lista => {
+  const unsubscribe = obtenerAnimales(usuarioActivo.uid, fincaActivaId, lista => {
     animalesGlobal = lista;
     datosListos = true;
   });
@@ -670,7 +688,7 @@ export function inicializarEliminar() {
     }
 
     try {
-      await eliminarAnimal(usuarioActivo.uid, animal.id); //linea corregida @allison
+      await eliminarAnimal(usuarioActivo.uid, fincaActivaId, animal.id); //linea corregida @allison
       mostrarNotificacion('Animal eliminado correctamente.');
       formEliminar.reset();
     } catch (err) {

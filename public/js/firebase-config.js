@@ -25,11 +25,16 @@ export const app = initializeApp(firebaseConfig);
 // 2) Inicializa Firestore
 export const db = getFirestore(app);
 
-export async function codigoExisteEnFirebase(uid, codigo) {
-    const colRef = collection(db, 'usuarios', uid, 'animales');
+export async function codigoExisteEnFirebase(uid, fincaId, codigo) {
+  try {
+    const colRef = collection(db, 'usuarios', uid, 'fincas', fincaId, 'animales');
     const q = query(colRef, where('codigo', '==', codigo));
     const snapshot = await getDocs(q);
     return !snapshot.empty;
+  } catch (error) {
+    console.error("Error verificando código en Firebase:", error);
+    return false; // o puedes lanzar el error si prefieres manejarlo externamente
+  }
 }
 
 // 3) Habilita persistencia offline en múltiples pestañas

@@ -141,3 +141,15 @@ export function mostrarNotificacion(mensaje, tipo = 'exito', duracion = 3000) {
         div.classList.remove('visible');
     }, duracion);
 }
+
+export function mostrarFincaActiva(nombre) {
+  const indicador = document.getElementById('indicadorFincaActiva');
+
+  if (!indicador) return;
+
+  if (!nombre) {
+    indicador.innerHTML = 'Ninguna finca activa';
+  } else {
+    indicador.innerHTML = `Finca activa: <strong>${nombre}</strong>`;
+  }
+}
