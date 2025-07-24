@@ -1,5 +1,5 @@
 import { observarUsuario, login, cerrarSesion } from './auth.js';
-import { obtenerFincaActiva  } from './fincasService.js'
+import { obtenerFincaActiva } from './fincasService.js'
 import { mostrarFincaActiva } from './utils.js';
 
 let usuarioActivo = null;
@@ -148,7 +148,9 @@ import {
     agregarAnimal,
     obtenerAnimales,
     eliminarAnimal,
-    actualizarAnimal
+    actualizarAnimal,
+    actualizarEstadoAnimal,
+    obtenerTodosLosAnimales
 } from './db.js';
 
 import { calcularEdadMeses, inicializarFormDinamico, cancelarEdicion, mostrarNotificacion, formatearEdad } from './utils.js';
@@ -299,7 +301,8 @@ function inicializarAgregar() {
             esTernero,
             tiempoAmamantado,
             numeroDePartos,
-            intervaloParto
+            intervaloParto,
+            estado: 'activo'
         };
 
         try {
@@ -340,12 +343,12 @@ function mostrarTodos() {
     let animalesGlobal = [];
 
     // Cargar desde base de datos
-
     try {
-        obtenerAnimales(usuarioActivo.uid, fincaActivaId,(listaDB) => {
-            animalesGlobal = listaDB;
-            renderAnimales(animalesGlobal, 'todos');
-        });
+        obtenerTodosLosAnimales(usuarioActivo.uid)
+            .then(animales => {
+                animalesGlobal = animales;
+                renderAnimales(animalesGlobal, 'todos');
+            })
     } catch (err) {
         console.error("Error al escuchar datos de animales:", err);
     }
@@ -359,7 +362,9 @@ function mostrarTodos() {
             ? animalesGlobal
             : animalesGlobal.filter(animal => {
                 if (tipoSeleccionado === 'ternero') return animal.esTernero;
-                return animal.tipo === tipoSeleccionado;
+                if (tipoSeleccionado === 'hembra' || tipoSeleccionado === 'toro') return animal.tipo === tipoSeleccionado;
+                if (['activo', 'vendido', 'muerto'].includes(tipoSeleccionado)) return animal.estado === tipoSeleccionado;
+                return true;
             });
 
         renderAnimales(filtrados, tipoSeleccionado);
@@ -382,6 +387,16 @@ function mostrarTodos() {
                 break;
             case 'ternero':
                 titulo = `Terneros Registrados (${cantidad})`;
+                break;
+
+            case 'vendido':
+                titulo = `Animales Vendidos (${cantidad})`;
+                break;
+            case 'muerto':
+                titulo = `Animales Muertos (${cantidad})`;
+                break;
+            case 'activo':
+                titulo = `Animales Activos (${cantidad})`;
                 break;
             default:
                 titulo = `Todos los animales registrados (${cantidad})`;
@@ -495,6 +510,11 @@ function inicializarModificar() {
     
                 document.getElementById('tipo').dispatchEvent(new Event('change'));
                 document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+                document.getElementById('estadoAnimalContainer').style.display = 'flex'
+
+                const estado = animal.estado || 'activo';
+                document.getElementById('estadoAnimal').textContent = estado.charAt(0).toUpperCase() + estado.slice(1);
+
     
                 if (animal.esTernero) {
                     document.getElementById('tiempoAmamantado').value = animal.tiempoAmamantado;
@@ -526,6 +546,19 @@ function inicializarModificar() {
                         contenedor.appendChild(formField);
                     }
                 }
+
+                // CAMBIO DE ESTADO
+                document.getElementById('accionesAnimal').style.display = 'block';
+
+                document.getElementById('btnMarcarMuerto').onclick = async () => {
+                await actualizarEstadoAnimal(usuarioActivo.uid, fincaActivaId, codigoBuscado, 'muerto');
+                alert('Animal marcado como muerto');
+                };
+
+                document.getElementById('btnMarcarVendido').onclick = async () => {
+                await actualizarEstadoAnimal(usuarioActivo.uid, fincaActivaId, codigoBuscado, 'vendido');
+                alert('Animal marcado como vendido');
+                };
     
                 editandoId = animal.id;
                 btnBuscar.textContent = 'Actualizar';
@@ -611,7 +644,8 @@ function inicializarModificar() {
             esTernero,
             tiempoAmamantado,
             numeroDePartos,
-            intervaloParto
+            intervaloParto,
+            estado: 'activo'
         };
 
         try {

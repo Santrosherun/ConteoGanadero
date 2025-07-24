@@ -124,9 +124,14 @@ export function cancelarEdicion(form, btnCancelar) {
     // Volver a estado limpio
     document.getElementById('tipo').dispatchEvent(new Event('change'));
     document.getElementById('fechaNacimiento').dispatchEvent(new Event('change'));
+    document.getElementById('contenedor-tipo').style.display = 'None'
+    document.getElementById('contenedor-fechaN').style.display = 'None'
 
     // Opcional: devolver foco al primer campo
     document.getElementById('codigo').focus();
+
+    document.getElementById('accionesAnimal').style.display = 'None';
+    document.getElementById('estadoAnimalContainer').style.display = 'None';
 }
 
 export function mostrarNotificacion(mensaje, tipo = 'exito', duracion = 3000) {

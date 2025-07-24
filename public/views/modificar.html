@@ -36,6 +36,11 @@
                                 <input type="number" id="tiempoAmamantado" placeholder="Meses amamantado" min="0" />  
                             </div>
                         </div>
+                        <!-- meter en div correspondiente -->
+                        <div id="estadoAnimalContainer" style="display: none;">
+                            <div class="form-field"><div class="label-largo"><label>Estado Actual:</label></div></div>
+                            <label id="estadoAnimal" class="estado-actual">Activo</label>
+                        </div>
                     </div>
                     
                     <!-- COLUMNAS A LA DERECHA -->
@@ -52,6 +57,12 @@
                                     
                             </div>
                         </div>
+                    </div>
+
+                    <div id="accionesAnimal" style="display: none;">
+                        <h2 class="subtitulo">Acciones</h2>
+                        <button id="btnMarcarMuerto" class="btn btn-warning">Marcar como Muerto</button>
+                        <button id="btnMarcarVendido" class="btn btn-warning">Marcar como Vendido</button>
                     </div>
 
                     <div class="form-buttons">
